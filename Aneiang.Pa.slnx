@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Aneiang.Pa.Core/Aneiang.Pa.Core.csproj" />
+  <Project Path="Aneiang.Pa.Test/Aneiang.Pa.Test.csproj" />
+  <Project Path="Aneiang.Pa.WeiBo/Aneiang.Pa.WeiBo.csproj" />
+  <Project Path="Aneiang.Pa.ZhiHu/Aneiang.Pa.ZhiHu.csproj" />
+  <Project Path="Aneiang.Pa/Aneiang.Pa.csproj" />
+</Solution>
