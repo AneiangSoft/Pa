@@ -11,6 +11,7 @@ namespace Aneiang.Pa.Data
         Bilibili,
         BaiDu,
         DouYin,
-        TouTiao
+        TouTiao,
+        HuPu
     }
 }
