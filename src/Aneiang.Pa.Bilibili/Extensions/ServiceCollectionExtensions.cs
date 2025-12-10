@@ -8,7 +8,7 @@ namespace Aneiang.Pa.Bilibili.Extensions
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// 注册微博爬取器
+        /// 注册爬取器
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>

@@ -1,0 +1,42 @@
+<Project>
+  <!-- 全局 NuGet 打包配置，适用于除 Demo/Test 以外的项目。
+       如需在单个项目覆盖，直接在 csproj 中重新定义对应属性即可。 -->
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)'!='Aneiang.Pa.Demo' and !$(MSBuildProjectName.Contains('Test'))">
+    <!-- 打包输出 -->
+    <IsPackable>true</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)nupkgs</PackageOutputPath>
+
+    <!-- 元数据 -->
+    <Authors>AneiangSoft</Authors>
+    <Company>AneiangSoft</Company>
+    <Product>Aneiang.Pa</Product>
+    <Version>1.0.3</Version>
+    <PackageIcon>icon.jpg</PackageIcon>
+    <Description>.NET 多平台热门新闻/热榜爬虫库。</Description>
+    <PackageDescription>.NET 多平台热门新闻/热榜爬虫库。</PackageDescription>
+    <PackageProjectUrl>https://github.com/AneiangSoft/Pa</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AneiangSoft/Pa.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>news;scraper;spider;hot-search;trending;weibo;zhihu;bilibili;baidu</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+
+    <!-- 版本与符号包 -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- 文档与可见性 -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SuppressWarnings>$(SuppressWarnings);1591</SuppressWarnings>
+  </PropertyGroup>
+
+  <!-- 将根目录 README.md 打入所有包 -->
+  <ItemGroup Condition="'$(MSBuildProjectName)'!='Aneiang.Pa.Demo' and !$(MSBuildProjectName.Contains('Test'))">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)assets\icon.jpg" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>
+

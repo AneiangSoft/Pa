@@ -1,5 +1,8 @@
 <Solution>
-  <Folder Name="/docments/" />
+  <Folder Name="/docments/">
+    <File Path="Directory.Build.props" />
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Aneiang.Pa/Aneiang.Pa.csproj" />
     <Project Path="src/Aneiang.Pa.Core/Aneiang.Pa.Core.csproj" />
