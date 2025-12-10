@@ -128,5 +128,5 @@ foreach (var news in result.Data)
 - 如果希望在 NuGet 包中发布你新增的平台，请在 Issue 先讨论方案
 
 ## 许可证
-仓库未包含许可证文件，NuGet 当前提示缺少 License。请在使用前确认授权或补充 License（推荐添加 LICENSE 并在 `Directory.Build.props` 配置 `<PackageLicenseExpression>` 或 `<PackageLicenseFile>`）。
+Aneiang.Pa 采用 [MIT 许可证](LICENSE)。
 
