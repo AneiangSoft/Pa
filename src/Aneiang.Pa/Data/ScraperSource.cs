@@ -9,6 +9,7 @@ namespace Aneiang.Pa.Data
         WeiBo,
         ZhiHu,
         Bilibili,
-        BaiDu
+        BaiDu,
+        DouYin
     }
 }

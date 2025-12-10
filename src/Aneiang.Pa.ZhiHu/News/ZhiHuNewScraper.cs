@@ -43,9 +43,9 @@ namespace Aneiang.Pa.ZhiHu.News
             {
                 _options.Check();
                 var client = _httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Referrer = new Uri(_options.NewsUrl);
+                client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
                 var newsResult = new NewsResult();
-                var response = await client.GetAsync(_options.NewsUrl);
+                var response = await client.GetAsync($"{_options.BaseUrl}{_options.NewsUrl}");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();

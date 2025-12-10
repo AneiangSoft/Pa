@@ -45,8 +45,8 @@ namespace Aneiang.Pa.BaiDu.News
             {
                 _options.Check();
                 var client = _httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Referrer = new Uri(_options.NewsUrl);
-                var response = await client.GetStringAsync(_options.NewsUrl);
+                client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
+                var response = await client.GetStringAsync($"{_options.BaseUrl}{_options.NewsUrl}");
                 var newsResult = new NewsResult();
                 var jsonMatch = Regex.Match(response, @"<!--s-data:(.*?)-->", RegexOptions.Singleline);
 

@@ -1,17 +1,14 @@
-﻿using System;
+﻿using Aneiang.Pa.Core.News;
+using System;
 
 namespace Aneiang.Pa.Bilibili.Models
 {
-    public class BilibiliScraperOptions
+    public class BilibiliScraperOptions: ScraperOptions
     {
-        public string SearchUrl { get; set; } = "https://s.search.bilibili.com/main/hotword?limit=30";
-
-        public void Check()
+        public BilibiliScraperOptions()
         {
-            if (string.IsNullOrWhiteSpace(SearchUrl))
-            {
-                throw new Exception("The Zhihu configuration parameters are incomplete or missing!");
-            }
+            BaseUrl = "https://s.search.bilibili.com";
+            NewsUrl = "/main/hotword?limit=30";
         }
     }
 }
