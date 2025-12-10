@@ -21,7 +21,7 @@ namespace Aneiang.Pa.ZhiHu.News
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>
-        public ZhiHuNewScraper(IHttpClientFactory httpClientFactory,IOptions<ZhiHuScraperOptions> options)
+        public ZhiHuNewScraper(IHttpClientFactory httpClientFactory, IOptions<ZhiHuScraperOptions> options)
         {
             _httpClientFactory = httpClientFactory;
             _options = options.Value;
@@ -39,33 +39,40 @@ namespace Aneiang.Pa.ZhiHu.News
 
         public async Task<NewsResult> GetNewsAsync()
         {
-            _options.Check();
-            var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Referrer = new Uri(_options.NewsUrl);
-            var newsResult = new NewsResult();
-            var response = await client.GetAsync(_options.NewsUrl);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<ZhiHuOriginalResult>(jsonString);
-                if (result == null) return newsResult;
-                foreach (var item in result.data)
+                _options.Check();
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Referrer = new Uri(_options.NewsUrl);
+                var newsResult = new NewsResult();
+                var response = await client.GetAsync(_options.NewsUrl);
+                if (response.IsSuccessStatusCode)
                 {
-                    var newsItem = new NewsItem 
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ZhiHuOriginalResult>(jsonString);
+                    if (result == null) return newsResult;
+                    foreach (var item in result.data)
                     {
-                        Id = item.card_id,
-                        Title = item.target.title_area.text,
-                        Url = item.target.link.url,
-                        MobileUrl = item.target.link.url,
-                    };
-                    newsItem.SetProperty("Desc", item.target.excerpt_area);
-                    newsItem.SetProperty("ImageUrl", item.target.image_area.url);
-                    newsItem.SetProperty("AnswerCount", item.feed_specific.answer_count);
-                    newsItem.SetProperty("Metrics", item.target.metrics_area.text);
-                    newsResult.Data.Add(newsItem);
+                        var newsItem = new NewsItem
+                        {
+                            Id = item.card_id,
+                            Title = item.target.title_area.text,
+                            Url = item.target.link.url,
+                            MobileUrl = item.target.link.url,
+                        };
+                        newsItem.SetProperty("Desc", item.target.excerpt_area);
+                        newsItem.SetProperty("ImageUrl", item.target.image_area.url);
+                        newsItem.SetProperty("AnswerCount", item.feed_specific.answer_count);
+                        newsItem.SetProperty("Metrics", item.target.metrics_area.text);
+                        newsResult.Data.Add(newsItem);
+                    }
                 }
+                return newsResult;
             }
-            return newsResult;
+            catch (Exception e)
+            {
+                return new NewsResult(false, e.Message);
+            }
         }
     }
 }

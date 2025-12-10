@@ -39,30 +39,37 @@ namespace Aneiang.Pa.Bilibili.News
 
         public async Task<NewsResult> GetNewsAsync()
         {
-            _options.Check();
-            var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.Referrer = new Uri(_options.SearchUrl);
-            var newsResult = new NewsResult();
-            var response = await client.GetAsync(_options.SearchUrl);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var jsonString = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<BilibiliSearchOriginalResult>(jsonString);
-                if (result == null) return newsResult;
-                foreach (var item in result.list)
+                _options.Check();
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Referrer = new Uri(_options.SearchUrl);
+                var newsResult = new NewsResult();
+                var response = await client.GetAsync(_options.SearchUrl);
+                if (response.IsSuccessStatusCode)
                 {
-                    var newsItem = new NewsItem
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<BilibiliSearchOriginalResult>(jsonString);
+                    if (result == null) return newsResult;
+                    foreach (var item in result.list)
                     {
-                        Id = item.keyword,
-                        Title = item.show_name,
-                        Url = $"https://search.bilibili.com/all?keyword={Uri.EscapeUriString(item.keyword)}",
-                        MobileUrl = $"https://search.bilibili.com/all?keyword={Uri.EscapeUriString(item.keyword)}"
-                    };
-                    newsItem.SetProperty("Original", item);
-                    newsResult.Data.Add(newsItem);
+                        var newsItem = new NewsItem
+                        {
+                            Id = item.keyword,
+                            Title = item.show_name,
+                            Url = $"https://search.bilibili.com/all?keyword={Uri.EscapeUriString(item.keyword)}",
+                            MobileUrl = $"https://search.bilibili.com/all?keyword={Uri.EscapeUriString(item.keyword)}"
+                        };
+                        newsItem.SetProperty("Original", item);
+                        newsResult.Data.Add(newsItem);
+                    }
                 }
+                return newsResult;
             }
-            return newsResult;
+            catch (Exception e)
+            {
+                return new NewsResult(false, e.Message);
+            }
         }
     }
 }

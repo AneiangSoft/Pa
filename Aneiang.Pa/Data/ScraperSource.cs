@@ -8,6 +8,7 @@ namespace Aneiang.Pa.Data
     {
         WeiBo,
         ZhiHu,
-        Bilibili
+        Bilibili,
+        BaiDu
     }
 }

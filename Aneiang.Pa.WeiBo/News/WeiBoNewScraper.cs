@@ -36,62 +36,69 @@ namespace Aneiang.Pa.WeiBo.News
         /// <summary>
         /// 获取热门消息
         /// </summary>
-
         public async Task<NewsResult> GetNewsAsync()
         {
-            _options.Check();
-            var client = _httpClientFactory.CreateClient();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.UserAgent);
-            client.DefaultRequestHeaders.Add("Cookie", _options.Cookie);
-            client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
-            var html = await client.GetStringAsync($"{_options.BaseUrl}{_options.NewsUrl}");
-            var htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(html);
-
-            var rows = htmlDocument.DocumentNode.SelectNodes("//*[@id='pl_top_realtimehot']//table/tbody/tr");
-            var newsResult = new NewsResult();
-            if (rows == null) return newsResult;
-
-            // 跳过第一行（可能是表头）
-            for (int i = 1; i < rows.Count; i++)
+            try
             {
-                var row = rows[i];
-                var linkNode = row.SelectSingleNode(".//td[@class='td-02']/a[not(contains(@href, 'javascript:void(0);'))]");
+                _options.Check();
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.UserAgent);
+                client.DefaultRequestHeaders.Add("Cookie", _options.Cookie);
+                client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
+                var html = await client.GetStringAsync($"{_options.BaseUrl}{_options.NewsUrl}");
+                var htmlDocument = new HtmlDocument();
+                htmlDocument.LoadHtml(html);
 
-                if (linkNode != null)
+                var rows = htmlDocument.DocumentNode.SelectNodes("//*[@id='pl_top_realtimehot']//table/tbody/tr");
+                var newsResult = new NewsResult();
+                if (rows == null) return newsResult;
+
+                // 跳过第一行（可能是表头）
+                for (var i = 1; i < rows.Count; i++)
                 {
-                    var title = linkNode.InnerText?.Trim();
-                    var href = linkNode.GetAttributeValue("href", "");
+                    var row = rows[i];
+                    var linkNode =
+                        row.SelectSingleNode(".//td[@class='td-02']/a[not(contains(@href, 'javascript:void(0);'))]");
 
-                    if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(href))
+                    if (linkNode != null)
                     {
-                        var flagNode = row.SelectSingleNode(".//td[@class='td-03']");
-                        var flag = flagNode?.InnerText?.Trim();
+                        var title = linkNode.InnerText?.Trim();
+                        var href = linkNode.GetAttributeValue("href", "");
 
-                        string flagUrl = null;
-                        if (flag == "新")
+                        if (!string.IsNullOrEmpty(title) && !string.IsNullOrEmpty(href))
                         {
-                            flagUrl = "https://simg.s.weibo.com/moter/flags/1_0.png";
-                        }
-                        else if (flag == "热")
-                        {
-                            flagUrl = "https://simg.s.weibo.com/moter/flags/2_0.png";
-                        }
+                            var flagNode = row.SelectSingleNode(".//td[@class='td-03']");
+                            var flag = flagNode?.InnerText?.Trim();
 
-                        var newsItem = new NewsItem
-                        {
-                            Id = title,
-                            Title = title,
-                            Url = $"{_options.BaseUrl}{href}",
-                            MobileUrl = $"{_options.BaseUrl}{href}"
-                        };
-                        newsItem.SetProperty("Icon", flagUrl);
-                        newsResult.Data.Add(newsItem);
+                            string flagUrl = null;
+                            if (flag == "新")
+                            {
+                                flagUrl = "https://simg.s.weibo.com/moter/flags/1_0.png";
+                            }
+                            else if (flag == "热")
+                            {
+                                flagUrl = "https://simg.s.weibo.com/moter/flags/2_0.png";
+                            }
+
+                            var newsItem = new NewsItem
+                            {
+                                Id = title,
+                                Title = title,
+                                Url = $"{_options.BaseUrl}{href}",
+                                MobileUrl = $"{_options.BaseUrl}{href}"
+                            };
+                            newsItem.SetProperty("Icon", flagUrl);
+                            newsResult.Data.Add(newsItem);
+                        }
                     }
                 }
-            }
 
-            return newsResult;
+                return newsResult;
+            }
+            catch (Exception e)
+            {
+                return new NewsResult(false, e.Message);
+            }
         }
     }
 }

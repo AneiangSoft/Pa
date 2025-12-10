@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Aneiang.Pa.Core.News.Models
 {
@@ -9,10 +7,15 @@ namespace Aneiang.Pa.Core.News.Models
     /// </summary>
     public class NewsResult
     {
+        public NewsResult(bool isSuccessd = true,string? errorMessage = null)
+        {
+            IsSuccessd = isSuccessd;
+            ErrorMessage = errorMessage;
+        }
         /// <summary>
         /// 是否成功
         /// </summary>
-        public bool IsSuccessd { get; set; } = true;
+        public bool IsSuccessd { get; set; }
 
         /// <summary>
         /// 错误消息

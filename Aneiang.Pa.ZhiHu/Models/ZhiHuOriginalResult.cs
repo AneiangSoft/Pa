@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Aneiang.Pa.ZhiHu.Models
 {
@@ -15,13 +14,13 @@ namespace Aneiang.Pa.ZhiHu.Models
         public string style_type { get; set; }
         public string id { get; set; }
         public string card_id { get; set; }
-        public Feed_Specific feed_specific { get; set; }
+        public FeedSpecific feed_specific { get; set; }
         public Target target { get; set; }
         public string attached_info { get; set; }
 
     }
 
-    public class Feed_Specific
+    public class FeedSpecific
     {
         public int answer_count { get; set; }
     }

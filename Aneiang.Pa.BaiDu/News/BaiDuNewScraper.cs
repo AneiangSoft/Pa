@@ -1,0 +1,95 @@
+﻿using Aneiang.Pa.BaiDu.Models;
+using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.News.Models;
+using Microsoft.Extensions.Options;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+namespace Aneiang.Pa.BaiDu.News
+{
+    /// <summary>
+    /// 微博热门
+    /// </summary>
+    public class BaiDuNewScraper : IBaiDuNewScraper
+    {
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly BaiDuScraperOptions _options;
+        /// <summary>
+        /// 微博热门
+        /// </summary>
+        /// <param name="httpClientFactory"></param>
+        /// <param name="options"></param>
+        public BaiDuNewScraper(IHttpClientFactory httpClientFactory, IOptions<BaiDuScraperOptions> options)
+        {
+            _httpClientFactory = httpClientFactory;
+            _options = options.Value;
+        }
+
+        /// <summary>
+        /// 标识
+        /// </summary>
+        public string Source => "BaiDu";
+
+
+        /// <summary>
+        /// 获取热门消息
+        /// </summary>
+
+        public async Task<NewsResult> GetNewsAsync()
+        {
+            try
+            {
+                _options.Check();
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Referrer = new Uri(_options.NewsUrl);
+                var response = await client.GetStringAsync(_options.NewsUrl);
+                var newsResult = new NewsResult();
+                var jsonMatch = Regex.Match(response, @"<!--s-data:(.*?)-->", RegexOptions.Singleline);
+
+                if (!jsonMatch.Success || jsonMatch.Groups.Count < 2)
+                {
+                    return newsResult;
+                }
+
+                var jsonStr = jsonMatch.Groups[1].Value;
+
+                // 3. 解析JSON
+                var baiduData = JsonSerializer.Deserialize<BaiduOriginalResult>(jsonStr);
+
+                if (baiduData?.data.cards == null || baiduData.data.cards.Count == 0)
+                {
+                    return newsResult;
+                }
+
+                // 4. 过滤和转换数据
+                var contentItems = baiduData.data.cards[0].content;
+
+
+                // 过滤掉置顶项，并转换为NewsItem
+                newsResult.Data = contentItems
+                    .Where(k => k.isTop != true)  // 过滤掉isTop为true的项
+                    .Select(k =>
+                    {
+                        var newsItem = new NewsItem
+                        {
+                            Id = k.rawUrl,
+                            Title = k.word,
+                            Url = k.rawUrl,
+                        };
+                        newsItem.SetProperty("Original", k);
+                        return newsItem;
+                    })
+                    .ToList();
+                return newsResult;
+            }
+            catch (Exception e)
+            {
+                return new NewsResult(false, e.Message);
+            }
+        }
+    }
+}

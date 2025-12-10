@@ -1,4 +1,6 @@
-﻿using Aneiang.Pa.Bilibili.Models;
+﻿using Aneiang.Pa.BaiDu.Models;
+using Aneiang.Pa.BaiDu.News;
+using Aneiang.Pa.Bilibili.Models;
 using Aneiang.Pa.Bilibili.News;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.News;
@@ -25,16 +27,19 @@ namespace Aneiang.Pa.Extensions
                 services.Configure<WeiBoScraperOptions>(configuration.GetSection("Scraper:WeiBo"));
                 services.Configure<ZhiHuScraperOptions>(configuration.GetSection("Scraper:ZhiHu"));
                 services.Configure<BilibiliScraperOptions>(configuration.GetSection("Scraper:Bilibili"));
+                services.Configure<BaiDuScraperOptions>(configuration.GetSection("Scraper:BaiDu"));
             }
 
             services.AddHttpClient();
             services.AddSingleton<IWeiBoNewScraper, WeiBoNewScraper>();
             services.AddSingleton<IZhiHuNewScraper, ZhiHuNewScraper>();
             services.AddSingleton<IBilibiliNewScraper, BilibiliNewScraper>();
+            services.AddSingleton<IBaiDuNewScraper, BaiDuNewScraper>();
 
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IWeiBoNewScraper>());
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IZhiHuNewScraper>());
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IBilibiliNewScraper>());
+            services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IBaiDuNewScraper>());
             services.AddSingleton<INewsScraperFactory, NewsScraperFactory>();
         }
     }
