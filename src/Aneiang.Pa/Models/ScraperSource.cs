@@ -1,0 +1,38 @@
+﻿namespace Aneiang.Pa.Models
+{
+    public enum ScraperSource
+    {
+        /// <summary>
+        /// 微博
+        /// </summary>
+        WeiBo,
+        /// <summary>
+        /// 知乎
+        /// </summary>
+        ZhiHu,
+        /// <summary>
+        /// B站
+        /// </summary>
+        Bilibili,
+        /// <summary>
+        /// 百度
+        /// </summary>
+        BaiDu,
+        /// <summary>
+        /// 抖音
+        /// </summary>
+        DouYin,
+        /// <summary>
+        /// 头条
+        /// </summary>
+        TouTiao,
+        /// <summary>
+        /// 虎扑
+        /// </summary>
+        HuPu,
+        /// <summary>
+        /// 腾讯
+        /// </summary>
+        Tencent
+    }
+}

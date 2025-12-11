@@ -1,7 +1,7 @@
 ﻿// Program.cs
 
-using Aneiang.Pa.Data;
 using Aneiang.Pa.Extensions;
+using Aneiang.Pa.Models;
 using Aneiang.Pa.News;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +19,7 @@ var builder = Host.CreateDefaultBuilder(args)
 using (var scope = builder.Services.CreateScope())
 {
     var newsScraperFactory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
-    var newsScraper = newsScraperFactory.GetScraper(ScraperSource.HuPu);
+    var newsScraper = newsScraperFactory.GetScraper(ScraperSource.Tencent);
     var newsResult = await newsScraper.GetNewsAsync();
     foreach (var news in newsResult.Data)
     {

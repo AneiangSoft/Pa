@@ -1,27 +1,27 @@
-﻿using Aneiang.Pa.Core.Data;
-using Aneiang.Pa.Core.News.Models;
-using Aneiang.Pa.TouTiao.Models;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.News.Models;
+using Aneiang.Pa.Tencent.Models;
+using Microsoft.Extensions.Options;
 
-namespace Aneiang.Pa.TouTiao.News
+namespace Aneiang.Pa.Tencent.News
 {
     /// <summary>
-    /// 头条热门爬虫
+    /// 腾讯综合早报爬虫
     /// </summary>
-    public class TouTiaoNewScraper : ITouTiaoNewScraper
+    public class TencentNewScraper : ITencentNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly TouTiaoScraperOptions _options;
+        private readonly TencentScraperOptions _options;
         /// <summary>
-        /// 头条热门爬虫
+        /// 腾讯综合早报爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>
-        public TouTiaoNewScraper(IHttpClientFactory httpClientFactory, IOptions<TouTiaoScraperOptions> options)
+        public TencentNewScraper(IHttpClientFactory httpClientFactory, IOptions<TencentScraperOptions> options)
         {
             _httpClientFactory = httpClientFactory;
             _options = options.Value;
@@ -30,7 +30,7 @@ namespace Aneiang.Pa.TouTiao.News
         /// <summary>
         /// 标识
         /// </summary>
-        public string Source => "TouTiao";
+        public string Source => "Tencent";
 
 
         /// <summary>
@@ -49,16 +49,17 @@ namespace Aneiang.Pa.TouTiao.News
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<TouTiaoOriginalResult>(jsonString);
-                    if (result == null || result.status!= "success") return newsResult;
-                    foreach (var item in result.data)
+                    var result = JsonSerializer.Deserialize<TencentOriginalResult>(jsonString);
+                    if (result == null) return newsResult;
+                    if(result.data.tabs.Count==0) return newsResult;
+                    foreach (var item in result.data.tabs[0].articleList)
                     {
                         var newsItem = new NewsItem
                         {
-                            Id = item.ClusterIdStr,
-                            Title = item.Title,
-                            Url = $"https://www.toutiao.com/trending/{item.ClusterIdStr}/",
-                            MobileUrl = $"https://www.toutiao.com/trending/{item.ClusterIdStr}/"
+                            Id = item.id,
+                            Title = item.title,
+                            Url = item.link_info.url,
+                            MobileUrl = item.link_info.url,
                         };
                         newsItem.SetOriginal(item);
                         newsResult.Data.Add(newsItem);

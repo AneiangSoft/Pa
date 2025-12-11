@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Aneiang.Pa.Core.News;
-using Aneiang.Pa.Data;
+using Aneiang.Pa.Models;
 
 namespace Aneiang.Pa.News
 {

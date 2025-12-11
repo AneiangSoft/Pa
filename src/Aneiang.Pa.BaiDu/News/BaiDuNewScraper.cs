@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 namespace Aneiang.Pa.BaiDu.News
 {
     /// <summary>
-    /// 微博热门
+    /// 百度热门爬虫
     /// </summary>
     public class BaiDuNewScraper : IBaiDuNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly BaiDuScraperOptions _options;
         /// <summary>
-        /// 微博热门
+        /// 百度热门爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>

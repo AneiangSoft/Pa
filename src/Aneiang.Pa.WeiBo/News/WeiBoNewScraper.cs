@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Aneiang.Pa.WeiBo.News
 {
     /// <summary>
-    /// 微博热门
+    /// 微博热门爬虫
     /// </summary>
     public class WeiBoNewScraper : IWeiBoNewScraper
     {
@@ -18,7 +18,7 @@ namespace Aneiang.Pa.WeiBo.News
         private readonly WeiBoScraperOptions _options;
 
         /// <summary>
-        /// 微博热门
+        /// 微博热门爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>

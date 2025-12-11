@@ -10,14 +10,14 @@ using Microsoft.Extensions.Options;
 namespace Aneiang.Pa.Bilibili.News
 {
     /// <summary>
-    /// 微博热门
+    /// B站热门搜索爬虫
     /// </summary>
     public class BilibiliNewScraper : IBilibiliNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly BilibiliScraperOptions _options;
         /// <summary>
-        /// 微博热门
+        /// B站热门搜索爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>

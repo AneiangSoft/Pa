@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace Aneiang.Pa.ZhiHu.News
 {
     /// <summary>
-    /// 微博热门
+    /// 知乎热门爬虫
     /// </summary>
     public class ZhiHuNewScraper : IZhiHuNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ZhiHuScraperOptions _options;
         /// <summary>
-        /// 微博热门
+        /// 知乎热门爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>

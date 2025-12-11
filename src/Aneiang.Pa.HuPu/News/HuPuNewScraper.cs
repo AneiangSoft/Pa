@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 namespace Aneiang.Pa.HuPu.News
 {
     /// <summary>
-    /// 微博热门
+    /// 虎扑热门爬虫
     /// </summary>
     public class HuPuNewScraper : IHuPuNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HuPuScraperOptions _options;
         /// <summary>
-        /// 微博热门
+        /// 虎扑热门爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>

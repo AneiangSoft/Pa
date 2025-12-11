@@ -12,14 +12,14 @@ using Microsoft.Extensions.Options;
 namespace Aneiang.Pa.DouYin.News
 {
     /// <summary>
-    /// 微博热门
+    /// 抖音热门爬虫
     /// </summary>
     public class DouYinNewScraper : IDouYinNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly DouYinScraperOptions _options;
         /// <summary>
-        /// 微博热门
+        /// 抖音热门爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>
