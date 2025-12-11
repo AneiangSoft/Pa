@@ -12,14 +12,14 @@
     <Authors>AneiangSoft</Authors>
     <Company>AneiangSoft</Company>
     <Product>Aneiang.Pa</Product>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
     <PackageIcon>icon.jpg</PackageIcon>
     <Description>.NET 多平台热门新闻/热榜爬虫库。</Description>
     <PackageDescription>.NET 多平台热门新闻/热榜爬虫库。</PackageDescription>
     <PackageProjectUrl>https://github.com/AneiangSoft/Pa</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AneiangSoft/Pa.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>news;scraper;spider;hot-search;trending;weibo;zhihu;bilibili;baidu</PackageTags>
+    <PackageTags>news;scraper;spider;hot-search;trending;weibo;zhihu;bilibili;baidu;hupu;juejin;tencent;toutiao;douyin,github,fenghuang,ifeng,steam</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

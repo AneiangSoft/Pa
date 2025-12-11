@@ -5,30 +5,32 @@
 [![Target](https://img.shields.io/badge/target-netstandard2.1-blue?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/status-active-success?style=flat-square)](#)
 
-一个基于 .NET 的多平台热门新闻/热榜爬虫库，提供统一接口、工厂与依赖注入支持，当前支持微博、知乎、B 站、百度、抖音、虎扑、头条等平台爬虫，并附带 Demo 示例。项目开源，后续将增加更多平台。
+一个基于 .NET 的多平台热门新闻/热榜爬虫库，当前支持微博、知乎、B 站、百度、抖音、虎扑、头条、腾讯、掘金等平台爬虫，并附带 Demo 示例。项目开源，后续将增加更多平台。
 
 ## 安装（NuGet）
 推荐聚合包（含全部平台）：
 ```bash
-dotnet add package Aneiang.Pa --version 1.0.4
+dotnet add package Aneiang.Pa --version 1.0.5
 ```
 按需引用单个包（示例）：
 ```bash
-dotnet add package Aneiang.Pa.WeiBo --version 1.0.4
+dotnet add package Aneiang.Pa.BaiDu --version 1.0.5
 ```
 
-### 已发布包（nuget.org，当前版本 1.0.4）
-| Package | 版本 | 说明 |
-| --- | --- | --- |
-| Aneiang.Pa | 1.0.4 | 聚合包，包含全部平台实现 |
-| Aneiang.Pa.Core | 1.0.4 | 核心接口与模型 |
-| Aneiang.Pa.BaiDu | 1.0.4 | 百度热榜爬虫 |
-| Aneiang.Pa.Bilibili | 1.0.4 | B 站热搜爬虫 |
-| Aneiang.Pa.WeiBo | 1.0.4 | 微博热搜爬虫 |
-| Aneiang.Pa.ZhiHu | 1.0.4 | 知乎热榜爬虫 |
-| Aneiang.Pa.DouYin | 1.0.4 | 抖音热榜爬虫 |
-| Aneiang.Pa.HuPu | 1.0.4 | 虎扑热帖/热榜爬虫 |
-| Aneiang.Pa.TouTiao | 1.0.4 | 今日头条热榜爬虫 |
+### 已发布包（nuget.org，当前版本 1.0.5）
+| Package | 说明 |
+| --- | --- |
+| Aneiang.Pa | 聚合包，包含全部平台实现 |
+| Aneiang.Pa.Core | 核心接口与模型 |
+| Aneiang.Pa.BaiDu | 百度热榜爬虫 |
+| Aneiang.Pa.Bilibili | B 站热搜爬虫 |
+| Aneiang.Pa.WeiBo | 微博热搜爬虫 |
+| Aneiang.Pa.ZhiHu | 知乎热榜爬虫 |
+| Aneiang.Pa.DouYin | 抖音热榜爬虫 |
+| Aneiang.Pa.HuPu | 虎扑热帖/热榜爬虫 |
+| Aneiang.Pa.TouTiao | 今日头条热榜爬虫 |
+| Aneiang.Pa.Tencent | 腾讯热榜爬虫 |
+| Aneiang.Pa.JueJin | 掘金热榜爬虫 |
 
 ## 快速开始（本地 Demo）
 1) 还原 & 构建
@@ -36,10 +38,7 @@ dotnet add package Aneiang.Pa.WeiBo --version 1.0.4
 dotnet restore
 dotnet build test/Aneiang.Pa.Demo/Aneiang.Pa.Demo.csproj
 ```
-
-2) 配置 `test/Aneiang.Pa.Demo/appsettings.json`（示例见下）
-
-3) 运行 Demo（默认抓取百度热榜，可修改 `ScraperSource`）
+2) 运行 Demo（默认抓取百度热榜，可修改 `ScraperSource`）
 ```bash
 dotnet run --project test/Aneiang.Pa.Demo
 ```
@@ -47,37 +46,30 @@ dotnet run --project test/Aneiang.Pa.Demo
 ## 在你的项目中使用（NuGet）
 ConfigureServices:
 ```csharp
+
+// 以下两种方式任选其一：
 // 自动注册各平台爬虫
 services.AddNewsScraper();
+
 // 注册单个平台爬虫
-services.AddWeiBoScraper();
+services.AddBaiDuScraper();
 ```
 
 ```csharp
+// 通过工厂模式获取爬虫实例
 var factory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
 var scraper = factory.GetScraper(ScraperSource.BaiDu);
 var result = await scraper.GetNewsAsync();
-```
 
-## 配置示例（appsettings.json）
-```json
-{
-  "Scraper": {
-    "WeiBo": {
-      "BaseUrl": "https://s.weibo.com",
-      "Cookie": "替换为你的 Cookie",
-      "UserAgent": "Mozilla/5.0 ...",
-      "NewsUrl": "/top/summary?cate=realtimehot"
-    }
-  }
-}
+// 直接注入单个平台爬虫
+var scraper = scope.ServiceProvider.GetRequiredService<IBaiDuNewScraper>();
+var result = await scraper.GetNewsAsync();
 ```
-注意：SDK默认配置所有平台，通常情况下不需要手动配置；当默认配置失效后，才会用到自定义配置。
 
 ## 规划与 Roadmap
-- ✅ 微博、知乎、B 站、百度热榜
-- 🚧 计划：抖音、头条、Twitter/X 等更多平台
-- 🧪 考虑：统一的重试/限流策略、更多元数据字段
+- ✅ 微博、知乎、B 站、百度、抖音、虎扑、头条、腾讯、掘金热榜
+- 🚧 计划：澎湃、凤凰网、GitHub、豆瓣、Steam等更多平台
+- 🧪 考虑：除热门新闻之外的其他数据爬取需求
 
 ## 贡献
 - 欢迎 PR / Issue，尤其是新增平台爬虫、改进解析与健壮性
