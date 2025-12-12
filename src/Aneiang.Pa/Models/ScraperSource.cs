@@ -37,6 +37,10 @@
         /// <summary>
         /// 掘金
         /// </summary>
-        JueJin
+        JueJin,
+        /// <summary>
+        /// 澎湃
+        /// </summary>
+        ThePaper
     }
 }
