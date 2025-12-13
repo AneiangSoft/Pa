@@ -1,8 +1,6 @@
 <p align="center">
-    <img src="assets/icon.jpg" alt="Aneiang.Pa" width="64" height="64" style="vertical-align:middle;border-radius:8px;">
+    <img src="assets/logo.png" alt="Aneiang.Pa" width="600" style="vertical-align:middle;border-radius:8px;">
 </p>
-    
-<h1 align="center">Aneiang.Pa</h1>
 
 [![NuGet](https://img.shields.io/nuget/v/Aneiang.Pa.svg?style=flat-square&logo=nuget)](https://www.nuget.org/packages/Aneiang.Pa)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Aneiang.Pa.svg?style=flat-square&logo=nuget)](https://www.nuget.org/packages/Aneiang.Pa)
