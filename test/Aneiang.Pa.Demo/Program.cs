@@ -1,5 +1,6 @@
 ﻿// Program.cs
 
+using Aneiang.Pa.Dynamic;
 using Aneiang.Pa.Extensions;
 using Aneiang.Pa.Models;
 using Aneiang.Pa.News;
@@ -16,19 +17,26 @@ var builder = Host.CreateDefaultBuilder(args)
     .Build();
 
 // 使用服务
+//using (var scope = builder.Services.CreateScope())
+//{
+//    var newsScraperFactory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
+//    var newsScraper = newsScraperFactory.GetScraper(ScraperSource.IFeng);
+//    var newsResult = await newsScraper.GetNewsAsync();
+//    foreach (var news in newsResult.Data)
+//    {
+//        Console.WriteLine($"标题: {news.Title}");
+//        Console.WriteLine($"URL: {news.Url}");
+//        if (!string.IsNullOrWhiteSpace(news.ExtensionData))
+//        {
+//            Console.WriteLine($"扩展: {news.ExtensionData}");
+//        }
+//        Console.WriteLine();
+//    }
+//}
+
 using (var scope = builder.Services.CreateScope())
 {
-    var newsScraperFactory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
-    var newsScraper = newsScraperFactory.GetScraper(ScraperSource.IFeng);
-    var newsResult = await newsScraper.GetNewsAsync();
-    foreach (var news in newsResult.Data)
-    {
-        Console.WriteLine($"标题: {news.Title}");
-        Console.WriteLine($"URL: {news.Url}");
-        if (!string.IsNullOrWhiteSpace(news.ExtensionData))
-        {
-            Console.WriteLine($"扩展: {news.ExtensionData}");
-        }
-        Console.WriteLine();
-    }
+    var newsScraperFactory = scope.ServiceProvider.GetRequiredService<DynamicScraper>();
+    await newsScraperFactory.Scraper();
+    
 }
