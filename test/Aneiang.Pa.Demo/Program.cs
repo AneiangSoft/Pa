@@ -1,6 +1,8 @@
 ﻿// Program.cs
 
 using Aneiang.Pa.Dynamic;
+using Aneiang.Pa.Dynamic.Attributes;
+using Aneiang.Pa.Dynamic.Extensions;
 using Aneiang.Pa.Extensions;
 using Aneiang.Pa.Models;
 using Aneiang.Pa.News;
@@ -9,34 +11,87 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateDefaultBuilder(args)
-    .ConfigureHostConfiguration(a=>a.AddJsonFile("appsettings.json"))
+    .ConfigureHostConfiguration(a => a.AddJsonFile("appsettings.json"))
     .ConfigureServices((context, services) =>
     {
         services.AddNewsScraper(context.Configuration);
+        services.AddDynamicScraper(context.Configuration);
     })
     .Build();
 
-// 使用服务
-//using (var scope = builder.Services.CreateScope())
-//{
-//    var newsScraperFactory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
-//    var newsScraper = newsScraperFactory.GetScraper(ScraperSource.IFeng);
-//    var newsResult = await newsScraper.GetNewsAsync();
-//    foreach (var news in newsResult.Data)
-//    {
-//        Console.WriteLine($"标题: {news.Title}");
-//        Console.WriteLine($"URL: {news.Url}");
-//        if (!string.IsNullOrWhiteSpace(news.ExtensionData))
-//        {
-//            Console.WriteLine($"扩展: {news.ExtensionData}");
-//        }
-//        Console.WriteLine();
-//    }
-//}
 
-using (var scope = builder.Services.CreateScope())
+Console.WriteLine("输出测试项：");
+Console.WriteLine("1、使用新闻爬取器");
+Console.WriteLine("2、使用动态爬取器");
+
+var tag = Console.ReadLine();
+switch (tag)
 {
-    var newsScraperFactory = scope.ServiceProvider.GetRequiredService<DynamicScraper>();
-    await newsScraperFactory.Scraper();
-    
+    case "1":
+        await ScraperNews();
+        break;
+    case "2":
+        await DynamicScraper();
+        break;
+    default:
+        Console.WriteLine("无效的选项");
+        break;
+}
+
+// 使用新闻爬取器
+async Task ScraperNews()
+{
+    using (var scope = builder.Services.CreateScope())
+    {
+        var newsScraperFactory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
+        var newsScraper = newsScraperFactory.GetScraper(ScraperSource.IFeng);
+        var newsResult = await newsScraper.GetNewsAsync();
+        foreach (var news in newsResult.Data)
+        {
+            Console.WriteLine($"标题: {news.Title}");
+            Console.WriteLine($"URL: {news.Url}");
+            if (!string.IsNullOrWhiteSpace(news.ExtensionData))
+            {
+                Console.WriteLine($"扩展: {news.ExtensionData}");
+            }
+            Console.WriteLine();
+        }
+    }
+}
+
+// 使用动态爬取器
+async Task DynamicScraper()
+{
+    using (var scope = builder.Services.CreateScope())
+    {
+        var newsScraperFactory = scope.ServiceProvider.GetRequiredService<DynamicScraper>();
+        var testDataSets = await newsScraperFactory.DatasetScraper<TestDataSet>("https://www.coderutil.com");
+        foreach (var testDataSet in testDataSets)
+        {
+            Console.WriteLine($"Title: {testDataSet.Title}");
+            Console.WriteLine($"Url: {testDataSet.Url}");
+            Console.WriteLine($"Icon: {testDataSet.Icon}");
+            Console.WriteLine($"Desc: {testDataSet.Desc}");
+            Console.WriteLine();
+        }
+
+    }
+}
+
+
+[HtmlContainer("div", htmlClass: "right-manual-tab-content", index: 1)]
+[HtmlItem("a")]
+public class TestDataSet
+{
+    [HtmlValue("p/b")]
+    public string Title { get; set; }
+
+    [HtmlValue(".", "href")]
+    public string Url { get; set; }
+
+    [HtmlValue("img", "src")]
+    public string Icon { get; set; }
+
+    [HtmlValue("p")]
+    public string Desc { get; set; }
 }
