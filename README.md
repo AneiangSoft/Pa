@@ -99,7 +99,7 @@ var testDataSets = await scraperFactory.DatasetScraper<TestDataSet>("https://www
 [HtmlItem("a")]
 public class TestDataSet
 {
-    [HtmlValue("p/b", htmlClass: "card-title")]
+    [HtmlValue("p/b")]
     public string Title { get; set; }
 
     [HtmlValue(".", "href")]
