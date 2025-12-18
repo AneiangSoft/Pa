@@ -16,11 +16,11 @@
 ## 安装（NuGet）
 推荐聚合包（含全部平台）：
 ```bash
-dotnet add package Aneiang.Pa --version 1.0.7
+dotnet add package Aneiang.Pa
 ```
 按需引用单个包（示例）：
 ```bash
-dotnet add package Aneiang.Pa.BaiDu --version 1.0.7
+dotnet add package Aneiang.Pa.BaiDu
 ```
 
 ### 已发布包
@@ -40,6 +40,7 @@ dotnet add package Aneiang.Pa.BaiDu --version 1.0.7
 | Aneiang.Pa.ThePaper | 澎湃热榜爬虫 |
 | Aneiang.Pa.DouBan | 豆瓣热榜爬虫 |
 | Aneiang.Pa.IFeng | 凤凰网热榜爬虫 |
+| Aneiang.Pa.Dynamic | 动态爬虫 |
 
 ## 快速开始（本地 Demo）
 1) 还原 & 构建
@@ -53,7 +54,6 @@ dotnet run --project test/Aneiang.Pa.Demo
 ```
 
 ## 在你的项目中使用（NuGet）
-ConfigureServices:
 ```csharp
 
 // 以下两种方式任选其一：
@@ -73,6 +73,78 @@ var result = await scraper.GetNewsAsync();
 // 直接注入单个平台爬虫
 var scraper = scope.ServiceProvider.GetRequiredService<IBaiDuNewScraper>();
 var result = await scraper.GetNewsAsync();
+```
+
+## 高阶用法
+对于通用的数据集爬取，提供了单独的SDK - Aneiang.Pa.Dynamic
+
+### 引入Nuget
+```bash
+dotnet add package Aneiang.Pa.Dynamic
+```
+使用时通过定义模型特性来实现，示例代码如下：
+```csharp
+services.AddDynamicScraper(context.Configuration);
+```
+
+```csharp
+var scraperFactory = scope.ServiceProvider.GetRequiredService<IDynamicScraper>();
+var testDataSets = await scraperFactory.DatasetScraper<TestDataSet>("https://www.coderutil.com");
+
+```
+重点在于定义TestDataSet模型
+
+```csharp
+[HtmlContainer("div", htmlClass: "tab-content", index: 1)]
+[HtmlItem("a")]
+public class TestDataSet
+{
+    [HtmlValue("p/b", htmlClass: "card-title")]
+    public string Title { get; set; }
+
+    [HtmlValue(".", "href")]
+    public string Url { get; set; }
+
+    [HtmlValue("img", "src")]
+    public string Icon { get; set; }
+
+    [HtmlValue("p", htmlClass: "card-desc")]
+    public string Desc { get; set; }
+}
+```
+### 特性说明
+
+ - `HtmlContainerAttribute`：数据集容器特性，包含数据集标签的父级标签，可以不是直接父级，支持通过`id`、`class`查找，但无法通过`id`、`class`判断唯一的时候，可以通过设置`index`获取指定的HTML节点。
+- `HtmlItemAttribute`：数据项特性，每条数据对应的HTML标签属性，支持通过`id`、`class`查找，但无法通过`id`、`class`判断唯一的时候，可以通过设置`index`获取指定的HTML节点。
+- `HtmlValueAttribute`：数据值特性，每条数据，每个字段对应的HTML标签属性，支持通过`id`、`class`查找，但无法通过`id`、`class`判断唯一的时候，可以通过设置`index`获取指定的HTML节点；`htmlAttribute`字段指定从哪个html特性中获取值。
+
+#### HtmlTag参数解析
+
+| 选择器 | 匹配结构 | 示例 |
+| --- | --- | --- |
+| `p/b` | p直接包含b | `<p><b></b></p>` |
+| `p//b` | p的任何后代中的p | `<p><div><b></b></div></p>` |
+| `p/div/b` | a > div > img | `<p><div><b></b></div></p>` |
+| `.` | 仅`HtmlValue`设置，表示取当前`HtmlItem`的HtmlTag||
+
+```html
+<div class="tab-content"> <!--div标签对应HtmlContainer-->
+    <a id="item" href="https://www.baidu.com/1"> <!--a标签对应HtmlItem；href对应Url值-->
+        <div>
+            <p class="card-title"><b>我是Title</b></p>
+            <p class="card-desc"> 我是Desc</p>
+            <img src="">  <!--我是Icon-->
+        <div>
+    </a> 
+    <a id="item" href="https://www.baidu.com/2"> <!--a标签对应HtmlItem；href对应Url值-->
+        <div>
+            <p class="card-title"><b>我是Title</b></p>
+            <p class="card-desc"> 我是Desc</p>
+            <img src="">  <!--我是Icon-->
+        <div>
+    </a> 
+</div>
+
 ```
 
 ## 规划与 Roadmap
