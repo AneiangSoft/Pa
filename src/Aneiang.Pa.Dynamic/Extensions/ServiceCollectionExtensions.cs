@@ -13,7 +13,7 @@ namespace Aneiang.Pa.Dynamic.Extensions
         public static void AddDynamicScraper(this IServiceCollection services, IConfiguration? configuration = null)
         {
             services.AddHttpClient();
-            services.AddSingleton<DynamicScraper>();
+            services.AddSingleton<IDynamicScraper, DynamicScraper>();
         }
     }
 }

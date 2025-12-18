@@ -12,7 +12,7 @@ namespace Aneiang.Pa.Dynamic
     /// <summary>
     /// 动态爬虫
     /// </summary>
-    public class DynamicScraper
+    public class DynamicScraper: IDynamicScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
 

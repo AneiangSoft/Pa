@@ -64,8 +64,8 @@ async Task DynamicScraper()
 {
     using (var scope = builder.Services.CreateScope())
     {
-        var newsScraperFactory = scope.ServiceProvider.GetRequiredService<DynamicScraper>();
-        var testDataSets = await newsScraperFactory.DatasetScraper<TestDataSet>("https://www.coderutil.com");
+        var scraperFactory = scope.ServiceProvider.GetRequiredService<IDynamicScraper>();
+        var testDataSets = await scraperFactory.DatasetScraper<TestDataSet>("https://www.coderutil.com");
         foreach (var testDataSet in testDataSets)
         {
             Console.WriteLine($"Title: {testDataSet.Title}");
@@ -92,6 +92,6 @@ public class TestDataSet
     [HtmlValue("img", "src")]
     public string Icon { get; set; }
 
-    [HtmlValue("p")]
+    [HtmlValue("p",htmlClass: "web-page-module-link-card-desc")]
     public string Desc { get; set; }
 }
