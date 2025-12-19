@@ -47,7 +47,7 @@ async Task ScraperNews()
     using (var scope = builder.Services.CreateScope())
     {
         var newsScraperFactory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
-        var newsScraper = newsScraperFactory.GetScraper(ScraperSource.Csdn);
+        var newsScraper = newsScraperFactory.GetScraper(ScraperSource.CnBlog);
         var newsResult = await newsScraper.GetNewsAsync();
         foreach (var news in newsResult.Data)
         {
@@ -68,7 +68,7 @@ async Task DynamicScraper()
     using (var scope = builder.Services.CreateScope())
     {
         var scraperFactory = scope.ServiceProvider.GetRequiredService<IDynamicScraper>();
-        var testDataSets = await scraperFactory.DatasetScraper<TestDataSet>("https://www.de62.com/listinfo-16-0.html");
+        var testDataSets = await scraperFactory.DatasetScraperAsync<TestDataSet>("https://www.de62.com/listinfo-16-0.html");
         foreach (var testDataSet in testDataSets)
         {
             Console.WriteLine($"Title: {testDataSet.Title}");

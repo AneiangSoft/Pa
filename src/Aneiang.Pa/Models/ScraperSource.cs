@@ -53,6 +53,10 @@
         /// <summary>
         /// CSDN
         /// </summary>
-        Csdn
+        Csdn,
+        /// <summary>
+        /// 博客园
+        /// </summary>
+        CnBlog
     }
 }

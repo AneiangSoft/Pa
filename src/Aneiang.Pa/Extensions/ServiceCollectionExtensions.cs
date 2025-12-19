@@ -2,6 +2,8 @@
 using Aneiang.Pa.BaiDu.News;
 using Aneiang.Pa.Bilibili.Models;
 using Aneiang.Pa.Bilibili.News;
+using Aneiang.Pa.CnBlog.Models;
+using Aneiang.Pa.CnBlog.News;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Csdn.Models;
 using Aneiang.Pa.Csdn.News;
@@ -55,6 +57,7 @@ namespace Aneiang.Pa.Extensions
                 services.Configure<DouBanScraperOptions>(configuration.GetSection("Scraper:DouBan"));
                 services.Configure<IFengScraperOptions>(configuration.GetSection("Scraper:IFeng"));
                 services.Configure<CsdnScraperOptions>(configuration.GetSection("Scraper:Csdn"));
+                services.Configure<CnBlogScraperOptions>(configuration.GetSection("Scraper:CnBlog"));
             }
 
             services.AddHttpClient();
@@ -71,6 +74,7 @@ namespace Aneiang.Pa.Extensions
             services.AddSingleton<IDouBanNewScraper, DouBanNewScraper>();
             services.AddSingleton<IIFengNewScraper, IFengNewScraper>();
             services.AddSingleton<ICsdnNewScraper, CsdnNewScraper>();
+            services.AddSingleton<ICnBlogNewScraper, CnBlogNewScraper>();
 
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IWeiBoNewScraper>());
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IZhiHuNewScraper>());
@@ -85,6 +89,7 @@ namespace Aneiang.Pa.Extensions
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IDouBanNewScraper>()); 
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IIFengNewScraper>());
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<ICsdnNewScraper>());
+            services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<ICnBlogNewScraper>());
 
             services.AddSingleton<INewsScraperFactory, NewsScraperFactory>();
         }

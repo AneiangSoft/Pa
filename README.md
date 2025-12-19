@@ -28,6 +28,7 @@ dotnet add package Aneiang.Pa.BaiDu
 | --- | --- |
 | Aneiang.Pa | 聚合包，包含全部平台实现 |
 | Aneiang.Pa.Core | 核心接口与模型 |
+| Aneiang.Pa.Dynamic | 动态爬虫 |
 | Aneiang.Pa.BaiDu | 百度热榜爬虫 |
 | Aneiang.Pa.Bilibili | B 站热搜爬虫 |
 | Aneiang.Pa.WeiBo | 微博热搜爬虫 |
@@ -41,7 +42,7 @@ dotnet add package Aneiang.Pa.BaiDu
 | Aneiang.Pa.DouBan | 豆瓣热榜爬虫 |
 | Aneiang.Pa.IFeng | 凤凰网热榜爬虫 |
 | Aneiang.Pa.Csdn | CSDN热榜爬虫 |
-| Aneiang.Pa.Dynamic | 动态爬虫 |
+| Aneiang.Pa.CnBlog | 博客园热榜爬虫 |
 
 ## 快速开始（本地 Demo）
 1) 还原 & 构建

@@ -28,7 +28,7 @@ namespace Aneiang.Pa.Dynamic
         /// <summary>
         /// 通用数据集抓取
         /// </summary>
-        public async Task<List<T>> DatasetScraper<T>(string url, string? referer = null, string? userAgent = null) where T : new()
+        public async Task<List<T>> DatasetScraperAsync<T>(string url, string? referer = null, string? userAgent = null) where T : new()
         {
             try
             {
