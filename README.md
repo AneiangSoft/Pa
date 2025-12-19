@@ -84,35 +84,112 @@ var result = await scraper.GetNewsAsync();
 ```bash
 dotnet add package Aneiang.Pa.Dynamic
 ```
-使用时通过定义模型特性来实现，示例代码如下：
+使用时通过定义模型特性来实现，以爬取[博客园](https://www.cnblogs.com/pick/)热门数据为例：
+
 ```csharp
-services.AddDynamicScraper(context.Configuration);
+services.AddDynamicScraper();
 ```
 
 ```csharp
 var scraperFactory = scope.ServiceProvider.GetRequiredService<IDynamicScraper>();
-var testDataSets = await scraperFactory.DatasetScraper<TestDataSet>("https://www.coderutil.com");
+var testDataSets = await scraperFactory.DatasetScraper<CnBlogOriginalResult>("https://www.cnblogs.com/pick");
 
 ```
-重点在于定义TestDataSet模型
+重点在于定义CnBlogOriginalResult模型
 
 ```csharp
-[HtmlContainer("div", htmlClass: "tab-content", index: 1)]
-[HtmlItem("a")]
-public class TestDataSet
+[HtmlContainer("div", htmlClass: "post-list",htmlId: "post_list", index: 1)]
+[HtmlItem("article",htmlClass: "post-item")]
+public class CnBlogOriginalResult
 {
-    [HtmlValue("p/b")]
+    [HtmlValue("a",htmlClass: "post-item-title")]
     public string Title { get; set; }
 
-    [HtmlValue(".", attribute: "href")]
+    [HtmlValue(".",attribute: "data-post-id")]
+    public string Id { get; set; }
+
+    [HtmlValue("a", htmlClass: "post-item-title",attribute: "href")]
     public string Url { get; set; }
 
-    [HtmlValue("img", attribute: "src")]
-    public string Icon { get; set; }
+    [HtmlValue(htmlXPath:".//a[@class=\"post-item-author\"]/span")]
+    public string AuthorName { get; set; }
 
-    [HtmlValue("p", htmlClass: "card-desc")]
+    [HtmlValue("a", htmlClass: "post-item-author", attribute: "href")]
+    public string AuthorUrl { get; set; }
+
+    [HtmlValue("p", htmlClass: "post-item-summary")]
     public string Desc { get; set; }
+
+    [HtmlValue(htmlXPath: ".//footer[@class=\"post-item-foot\"]/span[1]")]
+    public string CreateTime { get; set; }
+
+    [HtmlValue(htmlXPath: ".//footer[@class=\"post-item-foot\"]/a[2]")]
+    public string CommentCount { get; set; }
+
+    [HtmlValue(htmlXPath: ".//footer[@class=\"post-item-foot\"]/a[3]")]
+    public string LikeCount { get; set; }
+
+    [HtmlValue(htmlXPath: ".//footer[@class=\"post-item-foot\"]/a[4]")]
+    public string ReadCount { get; set; }
 }
+```
+爬取的博客园HTML部分代码如下：
+```html
+<div id="post_list" class="post-list">
+    <article class="post-item" data-post-id="19326078">
+        <section class="post-item-body">
+
+            <div class="post-item-text">
+                <a class="post-item-title" href="https://www.cnblogs.com/ydswin/p/19326078"
+                    target="_blank">Keepalived详解：原理、编译安装与高可用集群配置</a>
+                <p class="post-item-summary">
+                    <a href="https://www.cnblogs.com/ydswin" target="_blank">
+                        <img src="https://pic.cnblogs.com/face/1307305/20240510180945.png" class="avatar" alt="博主头像" />
+                    </a>
+                    在高可用架构中，避免单点故障至关重要。Keepalived正是为了解决这一问题而生的轻量级工具。本文将深入浅出地介绍Keepalived的工作原理，并提供从编译安装到实战配置的完整指南。
+                    1. Keepalived简介与工作原理 Keepalived是一个基于VRRP协议（虚拟路由冗余协议） 实现的 ...
+                </p>
+            </div>
+            <footer class="post-item-foot">
+                <a href="https://www.cnblogs.com/ydswin" class="post-item-author"
+                    target="_blank"><span>dashery</span></a>
+
+                <span class="post-meta-item">
+                <span>2025-12-09 13:01</span>
+                </span>
+                <a class="post-meta-item btn"
+                    href="https://www.cnblogs.com/ydswin/p/19326078#commentform" title="评论 1">
+                    <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                        <use xlink:href="#icon_comment"></use>
+                    </svg>
+                    <span>1</span>
+                </a>
+                <a id="digg_control_19326078" title="推荐 7" class="post-meta-item btn "
+                    href="javascript:void(0)"
+                    onclick="DiggPost('ydswin', 19326078, 817406, 1);return false;">
+                    <svg width="16" height="16" viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <use xlink:href="#icon_digg"></use>
+                    </svg>
+                    <span id="digg_count_19326078">7</span>
+                </a>
+                <a class="post-meta-item btn" href="https://www.cnblogs.com/ydswin/p/19326078"
+                    title="阅读 1892">
+                    <svg width="16" height="16" viewBox="0 0 16 16"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <use xlink:href="#icon_views"></use>
+                    </svg>
+                    <span>1892</span>
+                </a>
+                <span id="digg_tip_19326078" class="digg-tip" style="color: red"></span>
+            </footer>
+
+        </section>
+        <figure>
+        </figure>
+    </article>
+    <!-- 多个 <article> -->
+</div>
 ```
 ### 特性说明
 
@@ -131,25 +208,8 @@ public class TestDataSet
 | `p/div/b` | a > div > img | `<p><div><b></b></div></p>` |
 | `.` | 仅`HtmlValue`设置，表示取当前`HtmlItem`的HtmlTag||
 
-```html
-<div class="tab-content"> <!--div标签对应HtmlContainer-->
-    <a id="item" href="https://www.baidu.com/1"> <!--a标签对应HtmlItem；href对应Url值-->
-        <div>
-            <p class="card-title"><b>我是Title</b></p>
-            <p class="card-desc"> 我是Desc</p>
-            <img src="">  <!--我是Icon-->
-        <div>
-    </a> 
-    <a id="item" href="https://www.baidu.com/2"> <!--a标签对应HtmlItem；href对应Url值-->
-        <div>
-            <p class="card-title"><b>我是Title</b></p>
-            <p class="card-desc"> 我是Desc</p>
-            <img src="">  <!--我是Icon-->
-        <div>
-    </a> 
-</div>
-
-```
+### 爬取结果截图
+![](./assets/ScreenShot_D.png)
 
 ## 规划与 Roadmap
 - ✅ 微博、知乎、B 站、百度、抖音、虎扑、头条、腾讯、掘金、澎湃、凤凰网、豆瓣热榜
