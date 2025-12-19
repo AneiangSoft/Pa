@@ -1,29 +1,28 @@
-﻿using Aneiang.Pa.Core.Data;
-using Aneiang.Pa.Core.News.Models;
-using Aneiang.Pa.ZhiHu.Models;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Aneiang.Pa.Core.News;
+using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.News.Models;
+using Aneiang.Pa.Csdn.Models;
+using Microsoft.Extensions.Options;
 
-namespace Aneiang.Pa.ZhiHu.News
+namespace Aneiang.Pa.Csdn.News
 {
     /// <summary>
-    /// 知乎热门爬虫
+    /// Csdn热门爬虫
     /// </summary>
-    public class ZhiHuNewScraper : IZhiHuNewScraper
+    public class CsdnNewScraper : ICsdnNewScraper
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ZhiHuScraperOptions _options;
+        private readonly CsdnScraperOptions _options;
 
         /// <summary>
-        /// 知乎热门爬虫
+        /// Csdn热门爬虫
         /// </summary>
         /// <param name="httpClientFactory"></param>
         /// <param name="options"></param>
-        public ZhiHuNewScraper(IHttpClientFactory httpClientFactory, IOptions<ZhiHuScraperOptions> options)
+        public CsdnNewScraper(IHttpClientFactory httpClientFactory, IOptions<CsdnScraperOptions> options)
         {
             _httpClientFactory = httpClientFactory;
             _options = options.Value;
@@ -32,7 +31,7 @@ namespace Aneiang.Pa.ZhiHu.News
         /// <summary>
         /// 标识
         /// </summary>
-        public string Source => "ZhiHu";
+        public string Source => "Csdn";
 
 
         /// <summary>
@@ -51,16 +50,16 @@ namespace Aneiang.Pa.ZhiHu.News
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<ZhiHuOriginalResult>(jsonString);
+                    var result = JsonSerializer.Deserialize<CsdnOriginalResult>(jsonString);
                     if (result == null) return newsResult;
                     foreach (var item in result.data)
                     {
                         var newsItem = new NewsItem
                         {
-                            Id = item.card_id,
-                            Title = item.target.title_area.text,
-                            Url = item.target.link.url,
-                            MobileUrl = item.target.link.url,
+                            Id = item.productId,
+                            Title = item.articleTitle,
+                            Url = item.articleDetailUrl,
+                            MobileUrl = item.articleDetailUrl,
                         };
                         newsItem.SetOriginal(item);
                         newsResult.Data.Add(newsItem);

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http;
 
 namespace Aneiang.Pa.Dynamic.Extensions
 {
@@ -13,7 +15,7 @@ namespace Aneiang.Pa.Dynamic.Extensions
         public static void AddDynamicScraper(this IServiceCollection services, IConfiguration? configuration = null)
         {
             services.AddHttpClient();
-            services.AddSingleton<IDynamicScraper, DynamicScraper>();
+            services.TryAddSingleton<IDynamicScraper, DynamicScraper>();
         }
     }
 }

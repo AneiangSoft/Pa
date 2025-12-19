@@ -16,6 +16,6 @@ namespace Aneiang.Pa.Dynamic
         /// <param name="referer"></param>
         /// <param name="userAgent"></param>
         /// <returns></returns>
-        Task<List<T>> DatasetScraper<T>(string url, string? referer = null, string? userAgent = null) where T : new();
+        Task<List<T>> DatasetScraperAsync<T>(string url, string? referer = null, string? userAgent = null) where T : new();
     }
 }
