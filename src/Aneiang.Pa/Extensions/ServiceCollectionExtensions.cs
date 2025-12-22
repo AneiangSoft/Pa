@@ -33,6 +33,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Dynamic.Extensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Aneiang.Pa.Extensions
@@ -68,11 +69,8 @@ namespace Aneiang.Pa.Extensions
                 services.Configure<CnBlogScraperOptions>(configuration.GetSection("Scraper:CnBlog"));
             }
 
-            var httpClientBuilder = services.AddHttpClient(PaConsts.DefaultHttpClientName);
-            if (httpConfigureHandler != null)
-            {
-                httpClientBuilder.ConfigurePrimaryHttpMessageHandler(httpConfigureHandler);
-            }
+            services.AddDynamicScraper();
+
             services.TryAddSingleton<IWeiBoNewScraper, WeiBoNewScraper>();
             services.TryAddSingleton<IZhiHuNewScraper, ZhiHuNewScraper>();
             services.TryAddSingleton<IBilibiliNewScraper, BilibiliNewScraper>();
