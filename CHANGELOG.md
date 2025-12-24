@@ -1,6 +1,6 @@
 # Aneiang.Pa 版本变更记录
 
-## 1.1.4 (2025-12-22)
+## 1.1.4 (2025-12-24)
 - 新增：ASP.NET Core Web API 集成支持（Aneiang.Pa.AspNetCore 包）
   - 提供开箱即用的 RESTful API 控制器（ScraperController）
   - 支持获取指定平台的新闻数据
