@@ -32,6 +32,15 @@ namespace Aneiang.Pa.News
             if (_scraperMap.TryGetValue(source.ToString(), out var scraper)) return scraper;
             throw new ArgumentException($"No scraper registered for source: {source}");
         }
+
+        /// <summary>
+        ///     获取所有爬取器
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<INewsScraper> GetAllScrapers()
+        {
+            return _scraperMap.Values;
+        }
     }
 
     /// <summary>
@@ -45,5 +54,11 @@ namespace Aneiang.Pa.News
         /// <param name="source"></param>
         /// <returns></returns>
         INewsScraper GetScraper(ScraperSource source);
+
+        /// <summary>
+        ///     获取所有爬取器
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<INewsScraper> GetAllScrapers();
     }
 }

@@ -123,6 +123,9 @@ namespace Aneiang.Pa.Extensions
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<ICnBlogNewScraper>());
 
             services.AddSingleton<INewsScraperFactory, NewsScraperFactory>();
+            
+            // 注册健康检查服务
+            services.TryAddSingleton<Aneiang.Pa.Core.News.IScraperHealthCheckService, News.ScraperHealthCheckService>();
 
             return services;
         }
