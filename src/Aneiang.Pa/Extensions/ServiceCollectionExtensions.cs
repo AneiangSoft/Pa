@@ -35,6 +35,7 @@ using System.Net.Http;
 using Aneiang.Pa.Core.Data;
 using Aneiang.Pa.Dynamic.Extensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http;
 
 namespace Aneiang.Pa.Extensions
 {
@@ -46,10 +47,16 @@ namespace Aneiang.Pa.Extensions
         /// <summary>
         /// 注册新闻爬取器
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"></param>
-        /// <param name="httpConfigureHandler"></param>
-        public static IServiceCollection AddNewsScraper(this IServiceCollection services, IConfiguration? configuration = null, Func<HttpMessageHandler>? httpConfigureHandler = null)
+        /// <param name="services">服务集合</param>
+        /// <param name="configuration">配置对象</param>
+        /// <param name="httpConfigureHandler">HTTP 消息处理器工厂</param>
+        /// <param name="configureHttpClient">HTTP 客户端配置操作</param>
+        /// <returns>服务集合</returns>
+        public static IServiceCollection AddNewsScraper(
+            this IServiceCollection services, 
+            IConfiguration? configuration = null, 
+            Func<HttpMessageHandler>? httpConfigureHandler = null,
+            Action<IHttpClientBuilder>? configureHttpClient = null)
         {
             if (configuration != null)
             {
@@ -68,6 +75,20 @@ namespace Aneiang.Pa.Extensions
                 services.Configure<CsdnScraperOptions>(configuration.GetSection("Scraper:Csdn"));
                 services.Configure<CnBlogScraperOptions>(configuration.GetSection("Scraper:CnBlog"));
             }
+
+            // 统一注册 HTTP 客户端，设置默认超时时间
+            var httpClientBuilder = services.AddHttpClient(PaConsts.DefaultHttpClientName)
+                .ConfigureHttpClient(client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(PaConsts.DefaultHttpTimeoutSeconds);
+                });
+
+            if (httpConfigureHandler != null)
+            {
+                httpClientBuilder.ConfigurePrimaryHttpMessageHandler(httpConfigureHandler);
+            }
+
+            configureHttpClient?.Invoke(httpClientBuilder);
 
             services.AddDynamicScraper();
 

@@ -1,4 +1,4 @@
-﻿using Aneiang.Pa.Core.Data;
+﻿using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.HuPu.Models;
 using HtmlAgilityPack;
@@ -38,17 +38,22 @@ namespace Aneiang.Pa.HuPu.News
         /// <summary>
         /// 获取热门消息
         /// </summary>
-
+        /// <returns>新闻结果</returns>
         public async Task<NewsResult> GetNewsAsync()
         {
             try
             {
                 _options.Check();
+                var client = ScraperHttpClientHelper.CreateConfiguredClient(
+                    _httpClientFactory,
+                    _options.BaseUrl,
+                    _options.UserAgent);
+                
+                var html = await ScraperHttpClientHelper.GetStringAsync(
+                    client,
+                    $"{_options.BaseUrl}{_options.NewsUrl}");
+                
                 var newsResult = new NewsResult();
-                var client = _httpClientFactory.CreateClient(PaConsts.DefaultHttpClientName);
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.UserAgent);
-                client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
-                var html = await client.GetStringAsync($"{_options.BaseUrl}{_options.NewsUrl}");
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
 
@@ -118,7 +123,7 @@ namespace Aneiang.Pa.HuPu.News
             }
             catch (Exception e)
             {
-                return new NewsResult(false, e.Message);
+                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
             }
         }
 

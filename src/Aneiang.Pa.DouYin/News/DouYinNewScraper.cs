@@ -1,4 +1,5 @@
 ﻿using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.DouYin.Models;
 using Microsoft.Extensions.Options;
@@ -38,25 +39,35 @@ namespace Aneiang.Pa.DouYin.News
         /// <summary>
         /// 获取热门消息
         /// </summary>
-
+        /// <returns>新闻结果</returns>
         public async Task<NewsResult> GetNewsAsync()
         {
             try
             {
                 _options.Check();
-                var newsResult = new NewsResult();
-                var client = _httpClientFactory.CreateClient(PaConsts.DefaultHttpClientName);
                 var cookie = await GetDouYinCookieAsync();
-                if (string.IsNullOrEmpty(cookie)) return new NewsResult(false, "获取抖音Cookie失败！");
-                client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.UserAgent);
-                client.DefaultRequestHeaders.Add("Cookie", cookie);
-                var response = await client.GetAsync($"{_options.BaseUrl}{_options.NewsUrl}");
+                if (string.IsNullOrEmpty(cookie))
+                {
+                    return NewsResult.Failure("获取抖音Cookie失败！");
+                }
+                
+                var client = ScraperHttpClientHelper.CreateConfiguredClient(
+                    _httpClientFactory,
+                    _options.BaseUrl,
+                    _options.UserAgent,
+                    cookie);
+                
+                var newsResult = new NewsResult();
+                var response = await ScraperHttpClientHelper.GetAsync(
+                    client,
+                    $"{_options.BaseUrl}{_options.NewsUrl}");
+                
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonString = await response.Content.ReadAsStringAsync();
                     var douyinData = JsonSerializer.Deserialize<DouYinOriginalResult>(jsonString);
-                    if (douyinData == null) return new NewsResult();
+                    if (douyinData == null) return newsResult;
+                    
                     newsResult.Data = douyinData.data.word_list
                         .Select(k =>
                         {
@@ -71,23 +82,31 @@ namespace Aneiang.Pa.DouYin.News
                         })
                         .ToList();
                 }
+                else
+                {
+                    return NewsResult.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
+                }
+                
                 return newsResult;
             }
             catch (Exception e)
             {
-                return new NewsResult(false, e.Message);
+                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
             }
         }
 
         /// <summary>
         /// 获取抖音Cookie
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Cookie 字符串，如果获取失败则返回 null</returns>
         private async Task<string?> GetDouYinCookieAsync()
         {
             try
             {
-                var client = _httpClientFactory.CreateClient(PaConsts.DefaultHttpClientName);
+                var client = ScraperHttpClientHelper.CreateConfiguredClient(
+                    _httpClientFactory,
+                    "https://login.douyin.com/",
+                    _options.UserAgent);
 
                 const string loginUrl = "https://login.douyin.com/";
                 var request = new HttpRequestMessage(HttpMethod.Get, loginUrl);
@@ -95,14 +114,16 @@ namespace Aneiang.Pa.DouYin.News
                 request.Headers.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
                 request.Headers.Add("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
 
-                var response = await client.SendAsync(request);
+                var response = await client.SendAsync(request).ConfigureAwait(false);
 
                 if (response.Headers.TryGetValues("Set-Cookie", out var cookieValues))
                 {
                     return string.Join("; ", cookieValues);
                 }
 
-                return client.DefaultRequestHeaders.Contains("Cookie") ? client.DefaultRequestHeaders.GetValues("Cookie").FirstOrDefault() : null;
+                return client.DefaultRequestHeaders.Contains("Cookie")
+                    ? client.DefaultRequestHeaders.GetValues("Cookie").FirstOrDefault()
+                    : null;
             }
             catch
             {

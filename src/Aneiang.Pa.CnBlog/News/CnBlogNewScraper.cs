@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Aneiang.Pa.CnBlog.Models;
 using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.Dynamic;
 using Microsoft.Extensions.Options;
@@ -60,7 +61,7 @@ namespace Aneiang.Pa.CnBlog.News
             }
             catch (Exception e)
             {
-                return new NewsResult(false, e.Message);
+                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
             }
         }
     }

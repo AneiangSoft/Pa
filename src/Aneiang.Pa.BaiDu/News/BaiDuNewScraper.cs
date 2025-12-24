@@ -1,5 +1,5 @@
-﻿using Aneiang.Pa.BaiDu.Models;
-using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.BaiDu.Models;
+using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Microsoft.Extensions.Options;
 using System;
@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Aneiang.Pa.Core.Data;
 
 namespace Aneiang.Pa.BaiDu.News
 {
@@ -39,15 +40,24 @@ namespace Aneiang.Pa.BaiDu.News
         /// 获取热门消息
         /// </summary>
 
+        /// <summary>
+        /// 获取热门消息
+        /// </summary>
+        /// <returns>新闻结果</returns>
         public async Task<NewsResult> GetNewsAsync()
         {
             try
             {
                 _options.Check();
-                var client = _httpClientFactory.CreateClient(PaConsts.DefaultHttpClientName);
-                client.DefaultRequestHeaders.Referrer = new Uri(_options.BaseUrl);
-                client.DefaultRequestHeaders.UserAgent.ParseAdd(_options.UserAgent);
-                var response = await client.GetStringAsync($"{_options.BaseUrl}{_options.NewsUrl}");
+                var client = ScraperHttpClientHelper.CreateConfiguredClient(
+                    _httpClientFactory,
+                    _options.BaseUrl,
+                    _options.UserAgent);
+                
+                var response = await ScraperHttpClientHelper.GetStringAsync(
+                    client, 
+                    $"{_options.BaseUrl}{_options.NewsUrl}");
+                
                 var newsResult = new NewsResult();
                 var jsonMatch = Regex.Match(response, @"<!--s-data:(.*?)-->", RegexOptions.Singleline);
 
@@ -58,7 +68,7 @@ namespace Aneiang.Pa.BaiDu.News
 
                 var jsonStr = jsonMatch.Groups[1].Value;
 
-                // 3. 解析JSON
+                // 解析JSON
                 var baiduData = JsonSerializer.Deserialize<BaiduOriginalResult>(jsonStr);
 
                 if (baiduData?.data.cards == null || baiduData.data.cards.Count == 0)
@@ -66,9 +76,8 @@ namespace Aneiang.Pa.BaiDu.News
                     return newsResult;
                 }
 
-                // 4. 过滤和转换数据
+                // 过滤和转换数据
                 var contentItems = baiduData.data.cards[0].content;
-
 
                 // 过滤掉置顶项，并转换为NewsItem
                 newsResult.Data = contentItems
@@ -89,7 +98,7 @@ namespace Aneiang.Pa.BaiDu.News
             }
             catch (Exception e)
             {
-                return new NewsResult(false, e.Message);
+                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
             }
         }
     }
