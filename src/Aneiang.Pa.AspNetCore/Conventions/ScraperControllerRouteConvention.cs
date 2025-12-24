@@ -1,3 +1,4 @@
+using Aneiang.Pa.AspNetCore.Constants;
 using Aneiang.Pa.AspNetCore.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -27,9 +28,9 @@ namespace Aneiang.Pa.AspNetCore.Conventions
         /// <param name="controller">控制器模型</param>
         public void Apply(ControllerModel controller)
         {
-            if (controller.ControllerName == "Scraper")
+            if (controller.ControllerName == ScraperControllerConstants.ControllerName)
             {
-                var routePrefix = _options.RoutePrefix?.Trim('/') ?? "api/scraper";
+                var routePrefix = _options.RoutePrefix?.Trim('/') ?? ScraperControllerConstants.DefaultRoutePrefix;
 
                 // 更新控制器的路由前缀（如果已存在路由特性，则更新它）
                 if (controller.Selectors.Count == 0)
@@ -69,7 +70,7 @@ namespace Aneiang.Pa.AspNetCore.Conventions
                         if (string.IsNullOrEmpty(actionTemplate))
                         {
                             // GetAvailableSources 使用空模板（根路径）
-                            if (action.ActionName == "GetAvailableSources")
+                            if (action.ActionName == ScraperControllerConstants.GetAvailableSourcesActionName)
                             {
                                 selectorModel.AttributeRouteModel.Template = string.Empty;
                             }
@@ -94,7 +95,7 @@ namespace Aneiang.Pa.AspNetCore.Conventions
         {
             foreach (var controller in application.Controllers)
             {
-                if (controller.ControllerName == "Scraper")
+                if (controller.ControllerName == ScraperControllerConstants.ControllerName)
                 {
                     Apply(controller);
                 }
