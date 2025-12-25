@@ -1,4 +1,4 @@
-﻿using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.Data;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.WeiBo.Models;
@@ -38,7 +38,7 @@ namespace Aneiang.Pa.WeiBo.News
         /// 获取热门消息
         /// </summary>
         /// <returns>新闻结果</returns>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -56,7 +56,7 @@ namespace Aneiang.Pa.WeiBo.News
                 htmlDocument.LoadHtml(html);
 
                 var rows = htmlDocument.DocumentNode.SelectNodes("//*[@id='pl_top_realtimehot']//table/tbody/tr");
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 if (rows == null) return newsResult;
 
                 // 跳过第一行（可能是表头）
@@ -103,7 +103,7 @@ namespace Aneiang.Pa.WeiBo.News
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
     }

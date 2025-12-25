@@ -1,4 +1,4 @@
-﻿using Aneiang.Pa.Core.News;
+using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.HuPu.Models;
 using HtmlAgilityPack;
@@ -39,7 +39,7 @@ namespace Aneiang.Pa.HuPu.News
         /// 获取热门消息
         /// </summary>
         /// <returns>新闻结果</returns>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Aneiang.Pa.HuPu.News
                     client,
                     $"{_options.BaseUrl}{_options.NewsUrl}");
                 
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
 
@@ -123,13 +123,13 @@ namespace Aneiang.Pa.HuPu.News
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
 
-        private NewsResult ParseWithRegex(string html)
+        private AneiangGenericListResult<NewsItem> ParseWithRegex(string html)
         {
-            var result = new NewsResult();
+            var result = new AneiangGenericListResult<NewsItem>();
 
             try
             {
@@ -142,7 +142,7 @@ namespace Aneiang.Pa.HuPu.News
 
                 if (matches.Count == 0)
                 {
-                    return new NewsResult();
+                    return new AneiangGenericListResult<NewsItem>();
                 }
 
                 var hotItems = new List<NewsItem>();

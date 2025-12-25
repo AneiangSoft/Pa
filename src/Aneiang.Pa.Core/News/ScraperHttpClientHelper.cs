@@ -75,14 +75,14 @@ namespace Aneiang.Pa.Core.News
         /// <param name="exception">异常对象</param>
         /// <param name="source">来源标识</param>
         /// <returns>新闻结果</returns>
-        public static NewsResult CreateErrorResult(Exception exception, string source)
+        public static AneiangGenericListResult<NewsItem> CreateNewsErrorResult(Exception exception, string source)
         {
             var errorMessage = $"爬取 {source} 数据时发生错误: {exception.Message}";
             if (exception.InnerException != null)
             {
                 errorMessage += $" | 内部错误: {exception.InnerException.Message}";
             }
-            return new NewsResult(false, errorMessage);
+            return new AneiangGenericListResult<NewsItem>(false, errorMessage);
         }
     }
 }

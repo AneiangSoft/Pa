@@ -1,4 +1,4 @@
-﻿using Aneiang.Pa.BaiDu.Models;
+using Aneiang.Pa.BaiDu.Models;
 using Aneiang.Pa.BaiDu.News;
 using Aneiang.Pa.Bilibili.Models;
 using Aneiang.Pa.Bilibili.News;
@@ -34,8 +34,8 @@ using System;
 using System.Net.Http;
 using Aneiang.Pa.Core.Data;
 using Aneiang.Pa.Dynamic.Extensions;
+using Aneiang.Pa.Lottery.Extensions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Http;
 
 namespace Aneiang.Pa.Extensions
 {
@@ -125,7 +125,7 @@ namespace Aneiang.Pa.Extensions
             services.AddSingleton<INewsScraperFactory, NewsScraperFactory>();
             
             // 注册健康检查服务
-            services.TryAddSingleton<Aneiang.Pa.Core.News.IScraperHealthCheckService, News.ScraperHealthCheckService>();
+            services.TryAddSingleton<IScraperHealthCheckService, NewsScraperHealthCheckService>();
 
             return services;
         }

@@ -12,19 +12,19 @@ namespace Aneiang.Pa.News
     /// <summary>
     /// 爬虫健康检查服务
     /// </summary>
-    public class ScraperHealthCheckService : IScraperHealthCheckService
+    public class NewsScraperHealthCheckService : IScraperHealthCheckService
     {
         private readonly INewsScraperFactory _scraperFactory;
-        private readonly ILogger<ScraperHealthCheckService>? _logger;
+        private readonly ILogger<NewsScraperHealthCheckService>? _logger;
 
         /// <summary>
         /// 初始化爬虫健康检查服务
         /// </summary>
         /// <param name="scraperFactory">爬虫工厂</param>
         /// <param name="logger">日志记录器（可选）</param>
-        public ScraperHealthCheckService(
+        public NewsScraperHealthCheckService(
             INewsScraperFactory scraperFactory,
-            ILogger<ScraperHealthCheckService>? logger = null)
+            ILogger<NewsScraperHealthCheckService>? logger = null)
         {
             _scraperFactory = scraperFactory ?? throw new ArgumentNullException(nameof(scraperFactory));
             _logger = logger;

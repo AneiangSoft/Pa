@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Aneiang.Pa.CnBlog.Models;
 using Aneiang.Pa.Core.Data;
@@ -36,7 +36,7 @@ namespace Aneiang.Pa.CnBlog.News
         /// <summary>
         /// 获取热门消息
         /// </summary>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -44,7 +44,7 @@ namespace Aneiang.Pa.CnBlog.News
                 var data = await _dynamicScraper.DatasetScraperAsync<CnBlogOriginalResult>($"{_options.BaseUrl}{_options.NewsUrl}",
                     _options.BaseUrl,
                     _options.UserAgent);
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 foreach (var item in data)
                 {
                     var newsItem = new NewsItem
@@ -61,7 +61,7 @@ namespace Aneiang.Pa.CnBlog.News
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
     }

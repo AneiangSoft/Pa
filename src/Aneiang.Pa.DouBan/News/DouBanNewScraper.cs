@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -39,7 +39,7 @@ namespace Aneiang.Pa.DouBan.News
         /// 获取热门消息
         /// </summary>
         /// <returns>新闻结果</returns>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Aneiang.Pa.DouBan.News
                 client.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
                 
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 var response = await ScraperHttpClientHelper.GetAsync(
                     client,
                     $"{_options.BaseUrl}{_options.NewsUrl}");
@@ -79,14 +79,14 @@ namespace Aneiang.Pa.DouBan.News
                 }
                 else
                 {
-                    return NewsResult.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
+                    return AneiangGenericListResult<NewsItem>.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
                 }
                 
                 return newsResult;
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.Data;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.IFeng.Models;
@@ -39,7 +39,7 @@ namespace Aneiang.Pa.IFeng.News
         /// 获取热门消息
         /// </summary>
         /// <returns>新闻结果</returns>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Aneiang.Pa.IFeng.News
                     client,
                     $"{_options.BaseUrl}{_options.NewsUrl}");
                 
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 var jsonMatch = Regex.Match(response, @"var\s+allData\s*=\s*(\{[\s\S]*?\});", RegexOptions.Singleline);
                 if (!jsonMatch.Success || jsonMatch.Groups.Count < 2)
                 {
@@ -81,7 +81,7 @@ namespace Aneiang.Pa.IFeng.News
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
     }

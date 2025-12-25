@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Aneiang.Pa.Core.News.Models;
 
 namespace Aneiang.Pa.Core.News
@@ -17,6 +17,6 @@ namespace Aneiang.Pa.Core.News
         /// 获取新闻
         /// </summary>
         /// <returns></returns>
-        Task<NewsResult> GetNewsAsync();
+        Task<AneiangGenericListResult<NewsItem>> GetNewsAsync();
     }
 }

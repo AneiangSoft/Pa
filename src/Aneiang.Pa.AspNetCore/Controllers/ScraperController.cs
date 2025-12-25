@@ -55,17 +55,17 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         /// <response code="404">不支持的爬虫源</response>
         /// <response code="500">服务器内部错误</response>
         [HttpGet("{source}")]
-        [ProducesResponseType(typeof(NewsResult), 200)]
-        [ProducesResponseType(typeof(NewsResult), 400)]
-        [ProducesResponseType(typeof(NewsResult), 404)]
-        [ProducesResponseType(typeof(NewsResult), 500)]
+        [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 200)]
+        [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 400)]
+        [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 404)]
+        [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 500)]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult<NewsResult>> GetNews([FromRoute] string source)
+        public async Task<ActionResult<AneiangGenericListResult<NewsItem>>> GetNews([FromRoute] string source)
         {
             if (string.IsNullOrWhiteSpace(source))
             {
                 _logger.LogWarning("GetNews called with empty source parameter");
-                return BadRequest(new NewsResult(false, "源参数不能为空"));
+                return BadRequest(new AneiangGenericListResult<NewsItem>(false, "源参数不能为空"));
             }
 
             try
@@ -74,7 +74,7 @@ namespace Aneiang.Pa.AspNetCore.Controllers
                 if (!System.Enum.TryParse<ScraperSource>(source, true, out var scraperSource))
                 {
                     _logger.LogWarning("Unsupported scraper source: {Source}", source);
-                    return NotFound(new NewsResult(false, $"不支持的爬虫源: {source}"));
+                    return NotFound(new AneiangGenericListResult<NewsItem>(false, $"不支持的爬虫源: {source}"));
                 }
 
                 _logger.LogInformation("Fetching news from source: {Source}", scraperSource);
@@ -93,12 +93,12 @@ namespace Aneiang.Pa.AspNetCore.Controllers
             catch (ArgumentException ex)
             {
                 _logger.LogError(ex, "ArgumentException when fetching news from source: {Source}", source);
-                return NotFound(new NewsResult(false, ex.Message));
+                return NotFound(new AneiangGenericListResult<NewsItem>(false, ex.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unexpected error when fetching news from source: {Source}", source);
-                return StatusCode(500, new NewsResult(false, $"获取新闻失败: {ex.Message}"));
+                return StatusCode(500, new AneiangGenericListResult<NewsItem>(false, $"获取新闻失败: {ex.Message}"));
             }
         }
 

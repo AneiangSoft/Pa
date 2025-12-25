@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -38,7 +38,7 @@ namespace Aneiang.Pa.Tencent.News
         /// 获取热门消息
         /// </summary>
         /// <returns>新闻结果</returns>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Aneiang.Pa.Tencent.News
                     _options.BaseUrl,
                     _options.UserAgent);
                 
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 var response = await ScraperHttpClientHelper.GetAsync(
                     client,
                     $"{_options.BaseUrl}{_options.NewsUrl}");
@@ -75,14 +75,14 @@ namespace Aneiang.Pa.Tencent.News
                 }
                 else
                 {
-                    return NewsResult.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
+                    return AneiangGenericListResult<NewsItem>.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
                 }
                 
                 return newsResult;
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
     }

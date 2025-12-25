@@ -6,11 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Aneiang.Pa.BaiDu\Aneiang.Pa.BaiDu.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.Bilibili\Aneiang.Pa.Bilibili.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.CnBlog\Aneiang.Pa.CnBlog.csproj" />
@@ -20,6 +15,7 @@
     <ProjectReference Include="..\Aneiang.Pa.HuPu\Aneiang.Pa.HuPu.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.IFeng\Aneiang.Pa.IFeng.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.JueJin\Aneiang.Pa.JueJin.csproj" />
+    <ProjectReference Include="..\Aneiang.Pa.Lottery\Aneiang.Pa.Lottery.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.Tencent\Aneiang.Pa.Tencent.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.ThePaper\Aneiang.Pa.ThePaper.csproj" />
     <ProjectReference Include="..\Aneiang.Pa.TouTiao\Aneiang.Pa.TouTiao.csproj" />

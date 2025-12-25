@@ -1,4 +1,4 @@
-﻿using Aneiang.Pa.Core.Data;
+using Aneiang.Pa.Core.Data;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.DouYin.Models;
@@ -40,7 +40,7 @@ namespace Aneiang.Pa.DouYin.News
         /// 获取热门消息
         /// </summary>
         /// <returns>新闻结果</returns>
-        public async Task<NewsResult> GetNewsAsync()
+        public async Task<AneiangGenericListResult<NewsItem>> GetNewsAsync()
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Aneiang.Pa.DouYin.News
                 var cookie = await GetDouYinCookieAsync();
                 if (string.IsNullOrEmpty(cookie))
                 {
-                    return NewsResult.Failure("获取抖音Cookie失败！");
+                    return AneiangGenericListResult<NewsItem>.Failure("获取抖音Cookie失败！");
                 }
                 
                 var client = ScraperHttpClientHelper.CreateConfiguredClient(
@@ -57,7 +57,7 @@ namespace Aneiang.Pa.DouYin.News
                     _options.UserAgent,
                     cookie);
                 
-                var newsResult = new NewsResult();
+                var newsResult = new AneiangGenericListResult<NewsItem>();
                 var response = await ScraperHttpClientHelper.GetAsync(
                     client,
                     $"{_options.BaseUrl}{_options.NewsUrl}");
@@ -84,14 +84,14 @@ namespace Aneiang.Pa.DouYin.News
                 }
                 else
                 {
-                    return NewsResult.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
+                    return AneiangGenericListResult<NewsItem>.Failure($"HTTP 请求失败，状态码: {response.StatusCode}");
                 }
                 
                 return newsResult;
             }
             catch (Exception e)
             {
-                return ScraperHttpClientHelper.CreateErrorResult(e, Source);
+                return ScraperHttpClientHelper.CreateNewsErrorResult(e, Source);
             }
         }
 

@@ -12,9 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Aneiang.Pa.Dynamic\Aneiang.Pa.Dynamic.csproj" />
     <ProjectReference Include="..\..\src\Aneiang.Pa\Aneiang.Pa.csproj" />
-    <ProjectReference Include="..\..\src\Aneiang.Pa.Core\Aneiang.Pa.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
