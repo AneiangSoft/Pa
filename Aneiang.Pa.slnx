@@ -6,12 +6,12 @@
     <File Path="README.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Aneiang.Pa.Dynamic/Aneiang.Pa.Dynamic.csproj" Id="c4b1ad3a-78c0-463f-af1d-afa20174c6e1" />
+   
     <Project Path="src/Aneiang.Pa/Aneiang.Pa.csproj" />
+    <Project Path="src/Aneiang.Pa.AspNetCore/Aneiang.Pa.AspNetCore.csproj" />
   </Folder>
   <Folder Name="/src/Core/">
-    <Project Path="src/Aneiang.Pa.AspNetCore/Aneiang.Pa.AspNetCore.csproj" />
-    <Project Path="src/Aneiang.Pa.Core/Aneiang.Pa.Core.csproj" />
+    <Project Path="src/Core/Aneiang.Pa.Core/Aneiang.Pa.Core.csproj" />
   </Folder>
   <Folder Name="/src/News/">
     <Project Path="src/News/Aneiang.Pa.BaiDu/Aneiang.Pa.BaiDu.csproj" />
@@ -32,6 +32,7 @@
   </Folder>
   <Folder Name="/src/Sectors/">
     <Project Path="src/Sectors/Aneiang.Pa.Lottery/Aneiang.Pa.Lottery.csproj" Id="929ca852-e42c-4896-84ef-2607d55d2464" />
+     <Project Path="src/Sectors/Aneiang.Pa.Dynamic/Aneiang.Pa.Dynamic.csproj" Id="c4b1ad3a-78c0-463f-af1d-afa20174c6e1" />
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/Aneiang.Pa.ClientDemo/Aneiang.Pa.ClientDemo.csproj" Id="68dacdc0-4a81-41ef-b740-6b0c9fdd4ba7" />

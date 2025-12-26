@@ -6,21 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\News\Aneiang.Pa.BaiDu\Aneiang.Pa.BaiDu.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.Bilibili\Aneiang.Pa.Bilibili.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.CnBlog\Aneiang.Pa.CnBlog.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.Csdn\Aneiang.Pa.Csdn.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.DouBan\Aneiang.Pa.DouBan.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.DouYin\Aneiang.Pa.DouYin.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.HuPu\Aneiang.Pa.HuPu.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.IFeng\Aneiang.Pa.IFeng.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.JueJin\Aneiang.Pa.JueJin.csproj" />
+    <ProjectReference Include="..\Sectors\Aneiang.Pa.Dynamic\Aneiang.Pa.Dynamic.csproj" />
+    <ProjectReference Include="..\News\Aneiang.Pa.News\Aneiang.Pa.News.csproj" />
     <ProjectReference Include="..\Sectors\Aneiang.Pa.Lottery\Aneiang.Pa.Lottery.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.Tencent\Aneiang.Pa.Tencent.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.ThePaper\Aneiang.Pa.ThePaper.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.TouTiao\Aneiang.Pa.TouTiao.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.WeiBo\Aneiang.Pa.WeiBo.csproj" />
-    <ProjectReference Include="..\News\Aneiang.Pa.ZhiHu\Aneiang.Pa.ZhiHu.csproj" />
   </ItemGroup>
 
 </Project>

@@ -69,16 +69,7 @@ namespace Aneiang.Pa.AspNetCore.Conventions
                         // 如果 action 模板为空，根据 Action 名称设置默认模板
                         if (string.IsNullOrEmpty(actionTemplate))
                         {
-                            // GetAvailableSources 使用空模板（根路径）
-                            if (action.ActionName == ScraperControllerConstants.GetAvailableSourcesActionName)
-                            {
-                                selectorModel.AttributeRouteModel.Template = string.Empty;
-                            }
-                            else
-                            {
-                                // 其他 Action 使用 action 名称
-                                selectorModel.AttributeRouteModel.Template = action.ActionName;
-                            }
+                            selectorModel.AttributeRouteModel.Template = action.ActionName;
                         }
                         // 如果 action 模板不是绝对路径，则保持不变（因为控制器已经有路由前缀了）
                         // 如果 action 模板以 / 开头，则使用绝对路径（保持不变）

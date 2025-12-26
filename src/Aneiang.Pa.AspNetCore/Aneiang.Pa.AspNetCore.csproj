@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Aneiang.Pa.Core\Aneiang.Pa.Core.csproj" />
     <ProjectReference Include="..\Aneiang.Pa\Aneiang.Pa.csproj" />
   </ItemGroup>
 

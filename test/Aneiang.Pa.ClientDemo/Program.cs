@@ -1,5 +1,7 @@
 using Aneiang.Pa.Extensions;
 using Aneiang.Pa.AspNetCore.Extensions;
+using Aneiang.Pa.Lottery.Extensions;
+using Aneiang.Pa.News.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 // 注册新闻爬虫服务
 builder.Services.AddNewsScraper(builder.Configuration);
-
+builder.Services.AddLotteryScraper();
 // 添加爬虫控制器支持（自动生成 ScraperController）
 // 可以自定义路由前缀等配置
 builder.Services.AddScraperController(options =>

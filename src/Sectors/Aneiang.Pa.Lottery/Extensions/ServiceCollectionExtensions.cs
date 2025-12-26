@@ -16,7 +16,8 @@ namespace Aneiang.Pa.Lottery.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="httpConfigureHandler"></param>
-        public static void AddLotteryScraper(this IServiceCollection services, Func<HttpMessageHandler>? httpConfigureHandler = null)
+        /// <param name="addHttpClient">Whether to add the HttpClient. Defaults to true.</param>
+        public static void AddLotteryScraper(this IServiceCollection services, Func<HttpMessageHandler>? httpConfigureHandler = null, bool addHttpClient = true)
         {
             services.AddScraper<ILotteryScraper, LotteryScraper>(httpConfigureHandler);
         }

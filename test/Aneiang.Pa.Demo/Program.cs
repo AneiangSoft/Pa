@@ -1,16 +1,14 @@
 // Program.cs
 
-using Aneiang.Pa.Core.News.Models;
 using Aneiang.Pa.Core.Proxy;
 using Aneiang.Pa.Dynamic;
 using Aneiang.Pa.Dynamic.Attributes;
-using Aneiang.Pa.Dynamic.Extensions;
-using Aneiang.Pa.Extensions;
 using Aneiang.Pa.Lottery.Data;
 using Aneiang.Pa.Lottery.Extensions;
 using Aneiang.Pa.Lottery.Services;
-using Aneiang.Pa.Models;
-using Aneiang.Pa.News;
+using Aneiang.Pa.News.Extensions;
+using Aneiang.Pa.News.Models;
+using Aneiang.Pa.News.News;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -1,14 +1,15 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using Aneiang.Pa.AspNetCore.Options;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
-using Aneiang.Pa.Models;
-using Aneiang.Pa.News;
-using Aneiang.Pa.AspNetCore.Options;
+using Aneiang.Pa.Lottery.Services;
+using Aneiang.Pa.News.Models;
+using Aneiang.Pa.News.News;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Threading.Tasks;
+using Aneiang.Pa.Lottery.Data;
 
 namespace Aneiang.Pa.AspNetCore.Controllers
 {
@@ -24,23 +25,27 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         private readonly ILogger<ScraperController> _logger;
         private readonly ScraperControllerOptions _options;
         private readonly IScraperHealthCheckService? _healthCheckService;
-        private static readonly string[] AvailableSources = System.Enum.GetNames(typeof(ScraperSource));
+        private readonly ILotteryScraper _lotteryScraper;
+
+        private static readonly string[] AvailableSources = Enum.GetNames(typeof(ScraperSource));
+        private static readonly string[] AvailableLotteryTypes = Enum.GetNames(typeof(LotteryType));
 
         /// <summary>
         /// 初始化爬虫控制器
         /// </summary>
-        /// <param name="scraperFactory">爬虫工厂</param>
+        /// <param name="scraperFactory">新闻爬虫工厂</param>
+        /// <param name="lotteryScraper">彩票爬虫</param>
         /// <param name="logger">日志记录器</param>
         /// <param name="options">配置选项</param>
         /// <param name="healthCheckService">健康检查服务（可选）</param>
         public ScraperController(
-            INewsScraperFactory scraperFactory, 
+            INewsScraperFactory scraperFactory,
             ILogger<ScraperController> logger,
-            IOptions<ScraperControllerOptions> options,
-            IScraperHealthCheckService? healthCheckService = null)
+            IOptions<ScraperControllerOptions> options, ILotteryScraper lotteryScraper, IScraperHealthCheckService? healthCheckService = null)
         {
             _scraperFactory = scraperFactory ?? throw new ArgumentNullException(nameof(scraperFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _lotteryScraper = lotteryScraper;
             _options = options?.Value ?? new ScraperControllerOptions();
             _healthCheckService = healthCheckService;
         }
@@ -54,7 +59,7 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         /// <response code="400">请求参数无效</response>
         /// <response code="404">不支持的爬虫源</response>
         /// <response code="500">服务器内部错误</response>
-        [HttpGet("{source}")]
+        [HttpGet("news/{source}")]
         [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 200)]
         [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 400)]
         [ProducesResponseType(typeof(AneiangGenericListResult<NewsItem>), 404)]
@@ -80,7 +85,7 @@ namespace Aneiang.Pa.AspNetCore.Controllers
                 _logger.LogInformation("Fetching news from source: {Source}", scraperSource);
                 var scraper = _scraperFactory.GetScraper(scraperSource);
                 var result = await scraper.GetNewsAsync();
-                
+
                 if (!result.IsSuccessd)
                 {
                     _logger.LogError("Failed to fetch news from {Source}: {ErrorMessage}", scraperSource, result.ErrorMessage);
@@ -107,15 +112,142 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         /// </summary>
         /// <returns>支持的爬虫源列表</returns>
         /// <response code="200">成功获取爬虫源列表</response>
-        [HttpGet("available-sources")]
+        [HttpGet("news/sources")]
         [ProducesResponseType(typeof(object), 200)]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public ActionResult GetAvailableSources()
+        public ActionResult GetNewsSources()
         {
-            return Ok(new 
-            { 
+            return Ok(new
+            {
                 sources = AvailableSources,
                 count = AvailableSources.Length
+            });
+        }
+
+        /// <summary>
+        /// 获取福利彩票开奖信息
+        /// </summary>
+        /// <param name="type">福利彩票类型（支持大小写不敏感）</param>
+        /// <param name="pageNo">当前页数（默认为1）</param>
+        /// <param name="pageSize">每页请求数量（默认为30）</param>
+        /// <returns>彩票开奖信息</returns>
+        /// <response code="200">成功获取彩票开奖信息</response>
+        /// <response code="400">请求参数无效</response>
+        /// <response code="404">不支持的爬虫源</response>
+        /// <response code="500">服务器内部错误</response>
+        [HttpGet("lottery/welfare/{type}")]
+        [ProducesResponseType(typeof(AneiangGenericResult<WelfareLotteryData>), 200)]
+        [ProducesResponseType(typeof(AneiangGenericResult<WelfareLotteryData>), 400)]
+        [ProducesResponseType(typeof(AneiangGenericResult<WelfareLotteryData>), 404)]
+        [ProducesResponseType(typeof(AneiangGenericResult<WelfareLotteryData>), 500)]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<ActionResult<AneiangGenericResult<WelfareLotteryData>>> GetWelfareLottery([FromRoute] string type, int? pageNo, int? pageSize)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                _logger.LogWarning("GetWelfareLottery called with empty type parameter");
+                return BadRequest(new AneiangGenericResult<WelfareLotteryData>(false, "福利彩票类型参数不能为空"));
+            }
+
+            try
+            {
+                if (!Enum.TryParse<LotteryType>(type, true, out var lotteryType))
+                {
+                    _logger.LogWarning("Unsupported welfare lottery type: {Source}", lotteryType);
+                    return NotFound(new AneiangGenericResult<WelfareLotteryData>(false, $"不支持的福利彩票类型: {type}"));
+                }
+
+                var result = await _lotteryScraper.GetWelfareLotteryAsync(lotteryType, pageNo ?? 1, pageSize ?? 30);
+                if (!result.IsSuccessd)
+                {
+                    _logger.LogError("Failed to fetch welfare lottery from {Source}: {ErrorMessage}", lotteryType, result.ErrorMessage);
+                    return StatusCode(500, result);
+                }
+
+                _logger.LogInformation("Successfully fetched {Count} welfare lottery items from {Source}", result.Data?.Total, lotteryType);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "ArgumentException when fetching welfare lottery from type: {Source}", type);
+                return NotFound(new AneiangGenericResult<WelfareLotteryData>(false, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error when fetching welfare lottery from type: {Source}", type);
+                return StatusCode(500, new AneiangGenericResult<WelfareLotteryData>(false, $"获取福利彩票开奖信息失败: {ex.Message}"));
+            }
+        }
+
+        /// <summary>
+        /// 获取体育彩票开奖信息
+        /// </summary>
+        /// <param name="type">体育彩票类型（支持大小写不敏感）</param>
+        /// <param name="pageNo">当前页数（默认为1）</param>
+        /// <param name="pageSize">每页请求数量（默认为30）</param>
+        /// <returns>彩票开奖信息</returns>
+        /// <response code="200">成功获取彩票开奖信息</response>
+        /// <response code="400">请求参数无效</response>
+        /// <response code="404">不支持的爬虫源</response>
+        /// <response code="500">服务器内部错误</response>
+        [HttpGet("lottery/sport/{type}")]
+        [ProducesResponseType(typeof(AneiangGenericResult<SportLotteryResult>), 200)]
+        [ProducesResponseType(typeof(AneiangGenericResult<SportLotteryResult>), 400)]
+        [ProducesResponseType(typeof(AneiangGenericResult<SportLotteryResult>), 404)]
+        [ProducesResponseType(typeof(AneiangGenericResult<SportLotteryResult>), 500)]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<ActionResult<AneiangGenericResult<SportLotteryResult>>> GetSportLottery([FromRoute] string type, int? pageNo, int? pageSize)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+            {
+                _logger.LogWarning("GetSportLottery called with empty type parameter");
+                return BadRequest(new AneiangGenericResult<SportLotteryResult>(false, "体育彩票类型参数不能为空"));
+            }
+
+            try
+            {
+                if (!Enum.TryParse<LotteryType>(type, true, out var lotteryType))
+                {
+                    _logger.LogWarning("Unsupported sport lottery type: {Source}", lotteryType);
+                    return NotFound(new AneiangGenericResult<SportLotteryResult>(false, $"不支持的体育彩票类型: {type}"));
+                }
+
+                var result = await _lotteryScraper.GetSportLotteryAsync(lotteryType, pageNo ?? 1, pageSize ?? 30);
+                if (!result.IsSuccessd)
+                {
+                    _logger.LogError("Failed to fetch sport lottery from {Source}: {ErrorMessage}", lotteryType, result.ErrorMessage);
+                    return StatusCode(500, result);
+                }
+
+                _logger.LogInformation("Successfully fetched {Count} sport lottery items from {Source}", result.Data?.Value.Total, lotteryType);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.LogError(ex, "ArgumentException when fetching sport lottery from type: {Source}", type);
+                return NotFound(new AneiangGenericResult<SportLotteryResult>(false, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error when fetching sport lottery from type: {Source}", type);
+                return StatusCode(500, new AneiangGenericResult<SportLotteryResult>(false, $"获取体育彩票开奖信息失败: {ex.Message}"));
+            }
+        }
+
+        /// <summary>
+        /// 获取所有支持的彩票类型列表
+        /// </summary>
+        /// <returns>支持的彩票类型列表</returns>
+        /// <response code="200">成功获取支持的彩票类型列表</response>
+        [HttpGet("lottery/types")]
+        [ProducesResponseType(typeof(object), 200)]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public ActionResult GetLotteryTypes()
+        {
+            return Ok(new
+            {
+                sources = AvailableLotteryTypes,
+                count = AvailableLotteryTypes.Length
             });
         }
 
@@ -148,7 +280,7 @@ namespace Aneiang.Pa.AspNetCore.Controllers
 
                 _logger.LogInformation("开始执行爬虫健康检查，超时时间：{Timeout}ms", timeout);
                 var result = await _healthCheckService.CheckAllAsync(timeout);
-                
+
                 if (result.IsHealthy)
                 {
                     _logger.LogInformation("所有爬虫健康检查通过");
@@ -188,7 +320,7 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         [ProducesResponseType(typeof(object), 503)]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult<ScraperHealthStatus>> CheckScraperHealth(
-            [FromRoute] string source, 
+            [FromRoute] string source,
             [FromQuery] int? timeoutMs = null)
         {
             if (_healthCheckService == null)

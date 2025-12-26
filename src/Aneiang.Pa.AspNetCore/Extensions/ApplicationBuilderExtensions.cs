@@ -1,9 +1,7 @@
 using Aneiang.Pa.AspNetCore.Options;
-using Aneiang.Pa.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Aneiang.Pa.AspNetCore.Extensions
 {
