@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Aneiang.Pa.Core.Scraper;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Aneiang.Pa.Dynamic
@@ -6,7 +7,7 @@ namespace Aneiang.Pa.Dynamic
     /// <summary>
     /// 动态爬虫接口
     /// </summary>
-    public interface IDynamicScraper
+    public interface IDynamicScraper : IScraper
     {
         /// <summary>
         /// 通用数据集抓取

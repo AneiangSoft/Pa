@@ -1,9 +1,11 @@
-﻿using Aneiang.Pa.CnBlog.Models;
+using Aneiang.Pa.CnBlog.Models;
 using Aneiang.Pa.CnBlog.News;
+using Aneiang.Pa.Core.Extensions;
 using Aneiang.Pa.Dynamic.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
+using System.Net.Http;
 
 namespace Aneiang.Pa.CnBlog.Extensions
 {
@@ -17,14 +19,14 @@ namespace Aneiang.Pa.CnBlog.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        public static void AddCnBlogScraper(this IServiceCollection services, IConfiguration? configuration = null)
+        /// <param name="httpConfigureHandler"></param>
+        public static void AddCnBlogScraper(this IServiceCollection services, IConfiguration? configuration = null, Func<HttpMessageHandler>? httpConfigureHandler = null)
         {
-            if (configuration != null)
-            {
-                services.Configure<CnBlogScraperOptions>(configuration.GetSection("Scraper:CnBlog"));
-            }
-            services.AddDynamicScraper();
-            services.TryAddSingleton<ICnBlogNewScraper, CnBlogNewScraper>();
+            // 首先，添加 DynamicScraper 依赖。这将通过通用的 AddScraper 注册 HttpClient。
+            services.AddDynamicScraper(httpConfigureHandler);
+
+            // 接着，添加 CnBlog 自己的 Scraper，但明确告知通用的 AddScraper 不要再次注册 HttpClient。
+            services.AddScraper<ICnBlogNewScraper, CnBlogNewScraper, CnBlogScraperOptions>("Scraper:CnBlog", configuration, httpConfigureHandler, addHttpClient: false);
         }
     }
 }

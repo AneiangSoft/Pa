@@ -1,4 +1,5 @@
 using Aneiang.Pa.Core.News.Models;
+using Aneiang.Pa.Core.Scraper;
 using Aneiang.Pa.Lottery.Data;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace Aneiang.Pa.Lottery.Services
     /// <summary>
     /// 彩票爬取器
     /// </summary>
-    public interface ILotteryScraper
+    public interface ILotteryScraper : IScraper
     {
         /// <summary>
         /// 获取福利彩票最新开奖结果

@@ -1,12 +1,13 @@
-using System.Threading.Tasks;
 using Aneiang.Pa.Core.News.Models;
+using Aneiang.Pa.Core.Scraper;
+using System.Threading.Tasks;
 
 namespace Aneiang.Pa.Core.News
 {
     /// <summary>
     /// 新闻爬取器
     /// </summary>
-    public interface INewsScraper
+    public interface INewsScraper : IScraper
     {
         /// <summary>
         /// 标识
