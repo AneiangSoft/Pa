@@ -1,5 +1,13 @@
 # Aneiang.Pa 版本变更记录
 
+## 2.0.0 (2025-12-29)
+- 重大变更：项目架构调整，将爬虫分为 `News` (热榜) 和 `Sectors` (特定领域) 两大类，以提升模块化和可扩展性。
+- 新增：新增 `Sectors` (特定领域) 爬虫模块。
+- 新增：在 `Sectors` 模块下新增彩票数据爬虫 (`Aneiang.Pa.Lottery`)，支持福利彩票和体育彩票数据。
+- 优化：核心库 (`Aneiang.Pa.Core`) 重构，优化了接口、模型和公共服务。
+- 优化：调整了依赖注入的注册方式，提供更细粒度的服务注册选项（如 `AddPaScraper`, `AddNewsScraper`, `AddLotteryScraper`）。
+- 改进：更新 `README.md` 文档以反映新的项目架构和使用方式。
+
 ## 1.1.4 (2025-12-24)
 - 新增：ASP.NET Core Web API 集成支持（Aneiang.Pa.AspNetCore 包）
   - 提供开箱即用的 RESTful API 控制器（ScraperController）
