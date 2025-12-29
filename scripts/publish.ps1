@@ -20,7 +20,7 @@ Set-Location $repoRoot
 
 $output = Join-Path $repoRoot "nupkgs"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
-Get-ChildItem $output -Include *.nupkg, *.snupkg -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem $output -Recurse -Include *.nupkg, *.snupkg -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
 
 # Get all projects from the 'src' directory
 $srcPath = Join-Path $repoRoot "src"
@@ -45,10 +45,10 @@ if (-not $packages) {
     exit 1
 }
 
-foreach ($pkg in $packages) {
-    Write-Host "Pushing $($pkg.Name)..."
-    dotnet nuget push $pkg.FullName --skip-duplicate --source $Source --api-key $ApiKey
-    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-}
+# foreach ($pkg in $packages) {
+#     Write-Host "Pushing $($pkg.Name)..."
+#     dotnet nuget push $pkg.FullName --skip-duplicate --source $Source --api-key $ApiKey
+#     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+# }
 
 Write-Host "[OK] Pack and push done. Output: $output"

@@ -31,7 +31,6 @@ var builder = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-
 Console.WriteLine("输出测试项：");
 Console.WriteLine("1、使用新闻爬取器");
 Console.WriteLine("2、使用动态爬取器");
