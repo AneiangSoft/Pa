@@ -24,7 +24,7 @@ Get-ChildItem $output -Include *.nupkg, *.snupkg -ErrorAction SilentlyContinue |
 
 # Get all projects from the 'src' directory
 $srcPath = Join-Path $repoRoot "src"
-$csprojs = Get-ChildItem -Path $srcPath -Recurse -Filter *.csproj
+$csprojs = Get-ChildItem -Path $srcPath -Recurse -Filter *.csproj | Where-Object { $_.FullName -notmatch '\\test\\' }
 
 if (-not $csprojs) {
     Write-Error "No packable projects found in the 'src' directory."
