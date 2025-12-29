@@ -5,7 +5,7 @@ Param(
     [string]$Version
 )
 
-# Pack and push all packable projects except Demo/Test.
+# Pack and push all packable projects under the src directory.
 # Usage:
 #   $env:NUGET_API_KEY = "<your-key>"
 #   ./scripts/publish.ps1 [-ApiKey xxx] [-Source url] [-Configuration Release] [-Version 1.0.0]
@@ -20,13 +20,14 @@ Set-Location $repoRoot
 
 $output = Join-Path $repoRoot "nupkgs"
 New-Item -ItemType Directory -Force -Path $output | Out-Null
-Get-ChildItem $output -Filter *.nupkg -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+Get-ChildItem $output -Include *.nupkg, *.snupkg -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
 
-$csprojs = Get-ChildItem -Path $repoRoot -Recurse -Filter *.csproj |
-    Where-Object { $_.Name -notmatch 'Demo|Test' }
+# Get all projects from the 'src' directory
+$srcPath = Join-Path $repoRoot "src"
+$csprojs = Get-ChildItem -Path $srcPath -Recurse -Filter *.csproj
 
 if (-not $csprojs) {
-    Write-Error "No packable projects found."
+    Write-Error "No packable projects found in the 'src' directory."
     exit 1
 }
 
@@ -51,4 +52,3 @@ foreach ($pkg in $packages) {
 }
 
 Write-Host "[OK] Pack and push done. Output: $output"
-

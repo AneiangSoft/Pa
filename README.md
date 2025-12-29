@@ -8,30 +8,53 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Aneiang.Pa.svg?style=flat-square&logo=nuget)](https://www.nuget.org/packages/Aneiang.Pa)
 [![Target](https://img.shields.io/badge/target-netstandard2.1-blue?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/status-active-success?style=flat-square)](#)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-一个基于 .NET 开箱即用的爬虫库，使用复杂度极低，预设`多平台热榜`爬虫，当前支持微博、知乎、B 站、百度、抖音、虎扑、头条、腾讯、掘金、澎湃、凤凰网、豆瓣、Csdn、博客园等平台爬虫，除了预设热榜数据爬取，也支持`动态数据集`爬取。项目开源，后续将增加更多平台及数据、视频爬取。
+一个基于 .NET 开箱即用的爬虫库，使用复杂度极低。项目将爬虫分为两大类：`News`（热榜）和 `Sectors`（特定领域）。
+
+- **热榜**：预设了对多个主流平台热榜的爬取支持，包括微博、知乎、B 站、百度、抖音、虎扑、头条、腾讯、掘金、澎湃、凤凰网、豆瓣、CSDN、博客园等。
+- **特定领域**：提供更灵活的爬虫，目前包括 `Dynamic`（动态数据集爬取）和 `Lottery`（彩票数据爬取）。
+
+项目完全开源，后续将持续增加更多平台和数据类型的支持。
 
 **⚠️ 抓取间隔建议控制在五分钟以上，避免频繁抓取导致 IP 被封禁**
 
 **⚠️ 爬取的数据仅限用于个人学习、研究或公益目的。不得用于商业售卖、攻击他人或任何非法活动，否则需自行承担法律责任。**
 
+## 架构调整
+为了更好地组织和扩展功能，项目架构已进行调整：
+- `src/News`: 存放所有新闻热榜相关的爬虫项目。
+- `src/Sectors`: 存放特定领域的爬虫项目，如动态爬虫和彩票爬虫。
+- `src/Core`: 存放核心接口、模型和公共服务。
+
 ## 安装（NuGet）
-推荐聚合包（含全部平台）：
+项目提供两种聚合包和按需引用的单个功能包，开发者可根据需求选择。
+
+### 聚合包
+1.  **全局聚合包** (`Aneiang.Pa`)：包含所有已实现的功能，包括新闻热榜、特定领域爬虫等。
+    ```bash
+    dotnet add package Aneiang.Pa
+    ```
+2.  **热榜聚合包** (`Aneiang.Pa.News`)：仅包含所有新闻热榜相关的爬虫。
+    ```bash
+    dotnet add package Aneiang.Pa.News
+    ```
+
+### 单个功能包
+如果只需要特定平台或功能，可以按需引用单个包以减小依赖体积。
 ```bash
-dotnet add package Aneiang.Pa
-```
-按需引用单个包（示例）：
-```bash
+# 示例：仅引用百度热榜爬虫
 dotnet add package Aneiang.Pa.BaiDu
 ```
 
 ### 已发布包
 | Package | 说明 |
 | --- | --- |
-| Aneiang.Pa | 聚合包，包含全部平台实现 |
+| **Aneiang.Pa** | **聚合包，包含全部平台实现** |
 | Aneiang.Pa.Core | 核心接口与模型、代理池功能 |
-| Aneiang.Pa.Dynamic | 动态爬虫 |
 | Aneiang.Pa.AspNetCore | ASP.NET Core Web API 扩展（提供 RESTful API 控制器） |
+| **--- News (热榜) ---** | **---** |
+| Aneiang.Pa.News | 热榜聚合包，包含以下所有新闻平台 |
 | Aneiang.Pa.BaiDu | 百度热榜爬虫 |
 | Aneiang.Pa.Bilibili | B 站热搜爬虫 |
 | Aneiang.Pa.WeiBo | 微博热搜爬虫 |
@@ -46,6 +69,9 @@ dotnet add package Aneiang.Pa.BaiDu
 | Aneiang.Pa.IFeng | 凤凰网热榜爬虫 |
 | Aneiang.Pa.Csdn | CSDN热榜爬虫 |
 | Aneiang.Pa.CnBlog | 博客园热榜爬虫 |
+| **--- Sectors (特定领域) ---** | **---** |
+| Aneiang.Pa.Dynamic | 动态爬虫，可爬取任意网站的数据集合 |
+| Aneiang.Pa.Lottery | 彩票数据爬虫 |
 
 ## 快速开始（本地 Demo）
 1) 还原 & 构建
@@ -57,27 +83,66 @@ dotnet build test/Aneiang.Pa.Demo/Aneiang.Pa.Demo.csproj
 ```bash
 dotnet run --project test/Aneiang.Pa.Demo
 ```
+运行后，将在控制台看到抓取到的百度热榜数据。
 
-## 在你的项目中使用（NuGet）
+## 在你的项目中使用
+
+### 1. 注册服务
+
+最简单的方式是使用全局注册方法，一键添加所有爬虫功能。
+
 ```csharp
+// 注册所有爬虫（推荐）
+services.AddPaScraper();
+```
 
-// 以下两种方式任选其一：
-// 自动注册各平台爬虫
+如果你只需要特定功能，也可以按需注册：
+
+```csharp
+// 仅注册热榜爬虫
 services.AddNewsScraper();
 
-// 注册单个平台爬虫
+// 仅注册彩票爬虫
+services.AddLotteryScraper();
+
+// 仅注册动态爬虫
+services.AddDynamicScraper();
+
+// 仅注册百度热榜爬虫
 services.AddBaiDuScraper();
 ```
 
+### 2. 使用爬虫
+
+注册服务后，你可以从依赖注入容器中获取相应的服务实例。
+
+**获取热榜数据**
+
 ```csharp
-// 通过工厂模式获取爬虫实例
+// 通过工厂模式获取
 var factory = scope.ServiceProvider.GetRequiredService<INewsScraperFactory>();
 var scraper = factory.GetScraper(ScraperSource.BaiDu);
 var result = await scraper.GetNewsAsync();
 
-// 直接注入单个平台爬虫
-var scraper = scope.ServiceProvider.GetRequiredService<IBaiDuNewScraper>();
-var result = await scraper.GetNewsAsync();
+// 或直接注入单个爬虫
+var baiduScraper = scope.ServiceProvider.GetRequiredService<IBaiDuNewScraper>();
+var baiduResult = await baiduScraper.GetNewsAsync();
+```
+
+**获取彩票数据**
+
+```csharp
+var lotteryScraper = scope.ServiceProvider.GetRequiredService<ILotteryScraper>();
+var ssqResult = await lotteryScraper.GetLotteryDataAsync(LotteryType.SSQ); // 福利彩票
+var dltResult = await lotteryScraper.GetLotteryDataAsync(LotteryType.DLT); // 体育彩票
+```
+
+**使用动态爬虫**
+
+```csharp
+var dynamicScraper = scope.ServiceProvider.GetRequiredService<IDynamicScraper>();
+// 爬取博客园热门文章（需要先定义 CnBlogOriginalResult 模型）
+var cnblogsPosts = await dynamicScraper.DatasetScraper<CnBlogOriginalResult>("https://www.cnblogs.com/pick");
 ```
 
 ## 🌐 代理池功能（Proxy Pool）
@@ -328,8 +393,7 @@ builder.Services.ConfigureAuthorization(options =>
     {
         var authHeader = httpContext.Request.Headers["Authorization"].FirstOrDefault();
         if (authHeader?.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase) == true)
-        {
-            var token = authHeader.Substring("Bearer ".Length).Trim();
+        {            var token = authHeader.Substring("Bearer ".Length).Trim();
             // 验证 token（例如：验证 JWT、查询数据库等）
             if (token == "valid-token")
             {
@@ -508,13 +572,14 @@ public class CnBlogOriginalResult
 | `p/b` | p直接包含b | `<p><b></b></p>` |
 | `p//b` | p的任何后代中的p | `<p><div><b></b></div></p>` |
 | `p/div/b` | a > div > img | `<p><div><b></b></div></p>` |
-| `.` | 仅`HtmlValue`设置，表示取当前`HtmlItem`的HtmlTag||
+| `.` | 仅`HtmlValue`设置，表示取当前`HtmlItem`的HtmlTag|||
 
 ### 爬取结果截图
 ![](./assets/ScreenShot_D.png)
 
 ## 规划与 Roadmap
 - ✅ 微博、知乎、B 站、百度、抖音、虎扑、头条、腾讯、掘金、澎湃、凤凰网、豆瓣热榜
+- ✅ 彩票数据爬取（福利彩票、体育彩票）
 - 🚧 计划：GitHub、Steam等更多平台
 - 🧪 考虑：除热门新闻之外的其他数据爬取需求
 
@@ -525,4 +590,3 @@ public class CnBlogOriginalResult
 
 ## 许可证
 Aneiang.Pa 采用 [MIT 许可证](LICENSE)。
-
