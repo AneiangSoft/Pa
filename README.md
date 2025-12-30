@@ -8,7 +8,8 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Aneiang.Pa.svg?style=flat-square&logo=nuget)](https://www.nuget.org/packages/Aneiang.Pa)
 [![Target](https://img.shields.io/badge/target-netstandard2.1-blue?style=flat-square)](#)
 [![Status](https://img.shields.io/badge/status-active-success?style=flat-square)](#)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
+![GitHub Repo stars](https://img.shields.io/github/stars/AneiangSoft/Aneiang.Pa)
+
 
 一个基于 .NET 开箱即用的爬虫库，使用复杂度极低。项目将爬虫分为两大类：`News`（热榜）和 `Sectors`（特定领域）。
 
