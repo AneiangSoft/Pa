@@ -25,6 +25,9 @@
 - Github地址：[https://github.com/AneiangSoft/Aneiang.Pa](https://github.com/AneiangSoft/Aneiang.Pa)
 - Gitee地址（同步更新）：[https://gitee.com/aneiangsoft/Aneiang.Pa](https://gitee.com/aneiangsoft/Aneiang.Pa)
 - 热点新闻在线Demo：[https://news.aneiang.com](https://news.aneiang.com)
+>- 热点新闻Demo提供Docker 镜像 `caco/aneiang-pa-news`，可以一键部署。
+>- Github地址[https://github.com/AneiangSoft/Aneiang.Pa.News](https://github.com/AneiangSoft/Aneiang.Pa.News)
+>- Gitee地址（同步更新）：[https://gitee.com/aneiangsoft/Aneiang.Pa.News](https://gitee.com/aneiangsoft/Aneiang.Pa.News)
 
 ## 架构调整
 为了更好地组织和扩展功能，项目架构已进行调整：
