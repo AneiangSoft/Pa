@@ -1,3 +1,4 @@
+using Aneiang.Pa.AspNetCore.Caching;
 using Aneiang.Pa.AspNetCore.Options;
 using Aneiang.Pa.Core.News;
 using Aneiang.Pa.Core.News.Models;
@@ -26,6 +27,7 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         private readonly ScraperControllerOptions _options;
         private readonly IScraperHealthCheckService? _healthCheckService;
         private readonly ILotteryScraper _lotteryScraper;
+        private readonly ICacheService _cache;
 
         private static readonly string[] AvailableSources = Enum.GetNames(typeof(ScraperSource));
         private static readonly string[] AvailableLotteryTypes = Enum.GetNames(typeof(LotteryType));
@@ -37,15 +39,20 @@ namespace Aneiang.Pa.AspNetCore.Controllers
         /// <param name="lotteryScraper">彩票爬虫</param>
         /// <param name="logger">日志记录器</param>
         /// <param name="options">配置选项</param>
+        /// <param name="cache">缓存服务</param>
         /// <param name="healthCheckService">健康检查服务（可选）</param>
         public ScraperController(
             INewsScraperFactory scraperFactory,
             ILogger<ScraperController> logger,
-            IOptions<ScraperControllerOptions> options, ILotteryScraper lotteryScraper, IScraperHealthCheckService? healthCheckService = null)
+            IOptions<ScraperControllerOptions> options,
+            ILotteryScraper lotteryScraper,
+            ICacheService cache,
+            IScraperHealthCheckService? healthCheckService = null)
         {
             _scraperFactory = scraperFactory ?? throw new ArgumentNullException(nameof(scraperFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _lotteryScraper = lotteryScraper;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
             _options = options?.Value ?? new ScraperControllerOptions();
             _healthCheckService = healthCheckService;
         }
@@ -82,9 +89,15 @@ namespace Aneiang.Pa.AspNetCore.Controllers
                     return NotFound(new AneiangGenericListResult<NewsItem>(false, $"不支持的爬虫源: {source}"));
                 }
 
-                _logger.LogInformation("Fetching news from source: {Source}", scraperSource);
-                var scraper = _scraperFactory.GetScraper(scraperSource);
-                var result = await scraper.GetNewsAsync();
+                var cacheKey = $"scraper:news:{scraperSource}";
+
+                var result = await _cache.GetOrCreateAsync(cacheKey, async () =>
+                {
+                    _logger.LogInformation("Fetching news from source: {Source}", scraperSource);
+                    var scraper = _scraperFactory.GetScraper(scraperSource);
+                    return await scraper.GetNewsAsync();
+                }, _options.CacheDuration);
+
 
                 if (!result.IsSuccessd)
                 {
@@ -157,7 +170,14 @@ namespace Aneiang.Pa.AspNetCore.Controllers
                     return NotFound(new AneiangGenericResult<WelfareLotteryData>(false, $"不支持的福利彩票类型: {type}"));
                 }
 
-                var result = await _lotteryScraper.GetWelfareLotteryAsync(lotteryType, pageNo ?? 1, pageSize ?? 30);
+                var pn = pageNo ?? 1;
+                var ps = pageSize ?? 30;
+                var cacheKey = $"scraper:lottery:welfare:{lotteryType}:{pn}:{ps}";
+
+                var result = await _cache.GetOrCreateAsync(cacheKey,
+                    () => _lotteryScraper.GetWelfareLotteryAsync(lotteryType, pn, ps),
+                    _options.CacheDuration);
+
                 if (!result.IsSuccessd)
                 {
                     _logger.LogError("Failed to fetch welfare lottery from {Source}: {ErrorMessage}", lotteryType, result.ErrorMessage);
@@ -212,7 +232,14 @@ namespace Aneiang.Pa.AspNetCore.Controllers
                     return NotFound(new AneiangGenericResult<SportLotteryResult>(false, $"不支持的体育彩票类型: {type}"));
                 }
 
-                var result = await _lotteryScraper.GetSportLotteryAsync(lotteryType, pageNo ?? 1, pageSize ?? 30);
+                var pn = pageNo ?? 1;
+                var ps = pageSize ?? 30;
+                var cacheKey = $"scraper:lottery:sport:{lotteryType}:{pn}:{ps}";
+
+                var result = await _cache.GetOrCreateAsync(cacheKey,
+                    () => _lotteryScraper.GetSportLotteryAsync(lotteryType, pn, ps),
+                    _options.CacheDuration);
+
                 if (!result.IsSuccessd)
                 {
                     _logger.LogError("Failed to fetch sport lottery from {Source}: {ErrorMessage}", lotteryType, result.ErrorMessage);

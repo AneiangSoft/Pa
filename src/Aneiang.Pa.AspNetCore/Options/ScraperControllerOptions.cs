@@ -1,7 +1,29 @@
+using System;
 using Aneiang.Pa.AspNetCore.Constants;
 
 namespace Aneiang.Pa.AspNetCore.Options
 {
+    /// <summary>
+    /// 缓存提供方
+    /// </summary>
+    public enum ScraperCacheProvider
+    {
+        /// <summary>
+        /// 不启用缓存
+        /// </summary>
+        None = 0,
+
+        /// <summary>
+        /// 进程内内存缓存
+        /// </summary>
+        Memory = 1,
+
+        /// <summary>
+        /// Redis 分布式缓存
+        /// </summary>
+        Redis = 2,
+    }
+
     /// <summary>
     /// 爬虫控制器配置选项
     /// </summary>
@@ -18,14 +40,35 @@ namespace Aneiang.Pa.AspNetCore.Options
         public bool UseLowercaseInRoute { get; set; } = true;
 
         /// <summary>
-        /// 是否启用响应缓存，默认为 false
+        /// 缓存提供方，默认 None（不缓存）
         /// </summary>
-        public bool EnableResponseCaching { get; set; } = false;
+        public ScraperCacheProvider CacheProvider { get; set; } = ScraperCacheProvider.None;
 
         /// <summary>
-        /// 响应缓存时长（秒），默认为 300 秒（5分钟）
+        /// 默认缓存时长，默认 1 小时
         /// </summary>
-        public int CacheDurationSeconds { get; set; } = 300;
+        public TimeSpan CacheDuration { get; set; } = TimeSpan.FromHours(1);
+
+        /// <summary>
+        /// Redis 配置（当 CacheProvider=Redis 时生效）
+        /// </summary>
+        public ScraperRedisCacheOptions Redis { get; set; } = new ScraperRedisCacheOptions();
+    }
+
+    /// <summary>
+    /// Redis 缓存配置
+    /// </summary>
+    public class ScraperRedisCacheOptions
+    {
+        /// <summary>
+        /// Redis 连接字符串（如：localhost:6379）
+        /// </summary>
+        public string? Configuration { get; set; }
+
+        /// <summary>
+        /// Redis 实例名前缀（可选，用于区分不同应用的 Key）
+        /// </summary>
+        public string? InstanceName { get; set; }
     }
 }
 
