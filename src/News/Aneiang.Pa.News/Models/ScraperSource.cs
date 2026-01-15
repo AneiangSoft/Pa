@@ -61,6 +61,10 @@ namespace Aneiang.Pa.News.Models
         /// <summary>
         /// IT之家
         /// </summary>
-        ItHome
+        ItHome,
+        /// <summary>
+        /// 36氪
+        /// </summary>
+        _36kr
     }
 }

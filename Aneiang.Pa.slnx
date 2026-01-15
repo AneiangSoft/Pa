@@ -14,6 +14,7 @@
     <Project Path="src/Core/Aneiang.Pa.Core/Aneiang.Pa.Core.csproj" />
   </Folder>
   <Folder Name="/src/News/">
+    <Project Path="src/News/Aneiang.Pa.36kr/Aneiang.Pa.36kr.csproj" Id="30f27bae-fb5e-4bc7-af5f-253c0b436629" />
     <Project Path="src/News/Aneiang.Pa.BaiDu/Aneiang.Pa.BaiDu.csproj" />
     <Project Path="src/News/Aneiang.Pa.Bilibili/Aneiang.Pa.Bilibili.csproj" />
     <Project Path="src/News/Aneiang.Pa.CnBlog/Aneiang.Pa.CnBlog.csproj" Id="dfaef650-3e00-4e6e-b404-4e6d34600e8c" />
