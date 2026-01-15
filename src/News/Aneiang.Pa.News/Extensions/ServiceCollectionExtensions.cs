@@ -17,6 +17,8 @@ using Aneiang.Pa.HuPu.Models;
 using Aneiang.Pa.HuPu.News;
 using Aneiang.Pa.IFeng.Models;
 using Aneiang.Pa.IFeng.News;
+using Aneiang.Pa.ItHome.Models;
+using Aneiang.Pa.ItHome.News;
 using Aneiang.Pa.JueJin.Models;
 using Aneiang.Pa.JueJin.News;
 using Aneiang.Pa.News.News;
@@ -116,6 +118,10 @@ namespace Aneiang.Pa.News.Extensions
 
             services.AddScraper<ICnBlogNewScraper, CnBlogNewScraper, CnBlogScraperOptions>("Scraper:CnBlog", configuration, httpConfigureHandler, false);
             services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<ICnBlogNewScraper>());
+
+            services.AddScraper<IItHomeNewScraper, ItHomeNewScraper, ItHomeScraperOptions>("Scraper:ItHome", configuration, httpConfigureHandler, false);
+            services.AddSingleton<INewsScraper>(provider => provider.GetRequiredService<IItHomeNewScraper>());
+
 
             services.AddDynamicScraper();
             services.AddSingleton<INewsScraperFactory, NewsScraperFactory>();
